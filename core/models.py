@@ -1,12 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.conf import settings
+from django.core.validators import MaxValueValidator
 
 
+# プロフィール画像保存先
 def profileUpload_path(instance, filename):
     ext = filename.split('.')[-1]
     return '/'.join(['image', str(instance.userPro.id)+str(instance.username)+str('.')+str(ext)])
 
+# 投稿画像保存先
+def postUpload_path(instance, filename):
+    ext = filename.split('.')[-1]
+    return '/'.join(['postImage', str(instance.userPost.id)+str(instance.title)+str('.')+str(ext)])
 
 
 # email&password認証にカスタマイズ
@@ -58,9 +64,9 @@ class Profile(models.Model):
     # ユーザーネーム
     username = models.CharField(verbose_name='ユーザーネーム', max_length=30)
     # 年齢
-    age = models.IntegerField(verbose_name='年齢', max_length=3)
+    age = models.IntegerField(verbose_name='年齢', validators=[MaxValueValidator(3)])
     # 性別
-    gender = models.IntegerField(verbose_name='性別', max_length=2)
+    gender = models.IntegerField(verbose_name='性別', validators=[MaxValueValidator(2)])
     # 自己紹介
     introduction = models.TextField(verbose_name='自己紹介', max_length=1200)
     # プロフィール画像
@@ -80,17 +86,70 @@ class Profile(models.Model):
 # 投稿
 class Post(models.Model):
     userPost = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         related_name='userPost',
         on_delete=models.CASCADE
     )
+    # 投稿画像
+    postImage = models.ImageField(verbose_name='投稿画像', upload_to=postUpload_path)
+    # タイトル
+    title = models.CharField(verbose_name='タイトル', max_length=30)
+    # 説明
+    text = models.TextField(verbose_name='説明', max_length=1200)
+    # お気に入り件数
+    favoridCount = models.IntegerField(verbose_name='お気に入り件数')
+    # 投稿日時
+    created_at = models.DateTimeField(verbose_name='投稿日時', auto_now_add=True)
+    # 更新日時
+    updated_at = models.DateTimeField(verbose_name='更新日時', auto_now=True)
+
+    class Meta:
+        db_table = 'post'
     
+    def __str__(self):
+        return self.title
+
+
+# コメント
+class Comment(models.Model):
+    postComment = models.ForeignKey(
+        settings.POST_MODEL,
+        related_name='postComment',
+        on_delete=models.CASCADE
+    )
+    # コメント
+    comment = models.CharField(verbose_name='コメント', max_length=1200)
+    # コメント日時
+    created_at = models.DateTimeField(verbose_name='コメント日時')
+
+    class Meta:
+        db_table = 'Comment'
+    
+    def __str__(self):
+        return Post.title + ':' + self.comment
+
+
+# お気に入り
+class Favorid(models.Model):
+    postFavorid = models.ForeignKey(
+        settings.POST_MODEL,
+        related_name='postFavorid',
+        on_delete=models.CASCADE
+    )
+    # お気に入り
+    favorid = models.BooleanField(verbose_name='お気に入り', default=False)
+
+    class Meta:
+        db_table = 'favorid'
+    
+    def __str__(self):
+        return Post.title + ':' + str(self.favorid)
 
 
 # 友達申請
 class Friend(models.Model):
     # 友達申請
-    request = models.BooleanField(default=False)
+    request = models.BooleanField(verbose_name='友達申請', default=False)
     # 友達申請(送信元)
     follow = models.ForeignKey(
         settings.AUTH_USER_MODEL,
