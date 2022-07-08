@@ -39,6 +39,8 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    # ID
+    id = models.AutoField(primary_key=True)
     # メールアドレス
     email = models.CharField(max_length=255, unique=True)
     # ログイン許可
@@ -85,6 +87,8 @@ class Profile(models.Model):
 
 # 投稿
 class Post(models.Model):
+    # ID
+    id = models.AutoField(primary_key=True)
     userPost = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='userPost',
@@ -117,8 +121,13 @@ class Comment(models.Model):
         related_name='postComment',
         on_delete=models.CASCADE
     )
+    userComment = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='userComment',
+        on_delete=models.CASCADE
+    )
     # コメント
-    comment = models.CharField(verbose_name='コメント', max_length=1200)
+    comment = models.TextField(verbose_name='コメント', max_length=1200)
     # コメント日時
     created_at = models.DateTimeField(verbose_name='コメント日時')
 
@@ -134,6 +143,11 @@ class Favorid(models.Model):
     postFavorid = models.ForeignKey(
         settings.POST_MODEL,
         related_name='postFavorid',
+        on_delete=models.CASCADE
+    )
+    userFavorid = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='userFavorid',
         on_delete=models.CASCADE
     )
     # お気に入り

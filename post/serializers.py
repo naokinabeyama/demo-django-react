@@ -17,12 +17,16 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'postComment', 'comment', 'created_at')
-        extra_kwargs = {'postComment': {'read_only': True}}
+        fields = ('id', 'postComment', 'userComment', 'comment', 'created_at')
+        extra_kwargs = {'postComment': {'read_only': True},
+        'userComment': 
+        {'read_only': True}}
 
 
 class FavoridSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorid
-        fields = ('id', 'postFavorid', 'favorid')
-        extra_kwargs = {'postFavorid': {'read_only': True}}
+        fields = ('id', 'postFavorid', 'userFavorid', 'favorid')
+        extra_kwargs = {'postFavorid': {'read_only': True},
+        'userFavorid':
+        {'read_only': True}}
