@@ -3,10 +3,11 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from core.models import Profile, Friend
 
+# ユーザー
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ('id', 'emial', 'password')
+        fields = ('id', 'email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
     
     def create(self, validated_data):
@@ -15,15 +16,18 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
+# ユーザープロフィール
 class ProfileSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format='%Y-%m-%d', read_only=True)
     updated_at = serializers.DateTimeField(format='%Y-%m-%d', read_only=True)
 
     class Meta:
         model = Profile
-        fields = ('id', 'userPro', 'username', 'age', 'gender', 'introductioin', 'img', 'created_at', 'updated_at')
+        fields = ('id', 'userPro', 'username', 'age', 'gender', 'introduction', 'img', 'created_at', 'updated_at')
         extra_kwargs = {'userPro': {'read_only': True}}
 
+
+# 友達申請
 class FriendSerializer(serializers.ModelSerializer):
     class Meta:
         model = Friend

@@ -66,7 +66,7 @@ class Profile(models.Model):
     # ユーザーネーム
     username = models.CharField(verbose_name='ユーザーネーム', max_length=30)
     # 年齢
-    age = models.IntegerField(verbose_name='年齢', validators=[MaxValueValidator(3)])
+    age = models.IntegerField(verbose_name='年齢', validators=[MaxValueValidator(100)])
     # 性別
     gender = models.IntegerField(verbose_name='性別', validators=[MaxValueValidator(2)])
     # 自己紹介
@@ -100,8 +100,6 @@ class Post(models.Model):
     title = models.CharField(verbose_name='タイトル', max_length=30)
     # 説明
     text = models.TextField(verbose_name='説明', max_length=1200)
-    # お気に入り件数
-    favoridCount = models.IntegerField(verbose_name='お気に入り件数')
     # 投稿日時
     created_at = models.DateTimeField(verbose_name='投稿日時', auto_now_add=True)
     # 更新日時

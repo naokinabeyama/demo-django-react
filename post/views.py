@@ -39,19 +39,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 # お気に入り
-class Favorid(viewsets.ModelViewSet):
-    queryset = Favorid.object.all()
+class FavoridViewSet(viewsets.ModelViewSet):
+    queryset = Favorid.objects.all()
     serializer_class = serializers.FavoridSerializer
     authentication_classes = (authentication.TokenAuthentication, )
     permission_classes = (permissions.IsAuthenticated, )
-
-
-# ログインユーザーのお気に入り
-class MyFavoridListView(generics.ListAPIView):
-    queryset = Favorid.object.all()
-    serializer_class = serializers.FavoridSerializer
-    authentication_classes = (authentication.TokenAuthentication, )
-    permission_classes = (permissions.IsAuthenticated, )
-
-    def get_queryset(self):
-        return self.queryset.filter(userFavorid=self.request.user.id)
