@@ -127,7 +127,7 @@ class Comment(models.Model):
     # コメント
     comment = models.TextField(verbose_name='コメント', max_length=1200)
     # コメント日時
-    created_at = models.DateTimeField(verbose_name='コメント日時')
+    created_at = models.DateTimeField(verbose_name='コメント日時', auto_now_add=True)
 
     class Meta:
         db_table = 'Comment'

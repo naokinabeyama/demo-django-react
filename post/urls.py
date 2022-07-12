@@ -6,12 +6,12 @@ app_name = 'post'
 
 # viewでgenericで作成したメソッドはrouterには追加できない
 router = DefaultRouter()
-router.register('create', views.PostViewSet)
+router.register('article', views.PostViewSet)
 router.register('comment', views.CommentViewSet)
 router.register('favorid', views.FavoridViewSet)
 
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('mypost/', views.MyPostListView.as_view(), name='mypost')
+    path('mypost/', views.MyPostListView.as_view(), name='mypost'),
 ]
