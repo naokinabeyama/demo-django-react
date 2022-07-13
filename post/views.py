@@ -29,17 +29,14 @@ class MyPostListView(generics.ListAPIView):
 
 # コメント
 class CommentViewSet(viewsets.ModelViewSet):
-    post = Post.objects.all()
     queryset = Comment.objects.all()
     serializer_class = serializers.CommentSerializer
     authentication_classes = (authentication.TokenAuthentication, )
     permission_classes = (permissions.IsAuthenticated, )
 
-    # def get_queryset(self):
-    #     return self
-
     def perform_create(self, serializer):
-        serializer.save(userComment=self.request.user, postComment=Post.id)
+        serializer.save(userComment=self.request.user)
+
 
 
 # お気に入り
@@ -48,3 +45,9 @@ class FavoridViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.FavoridSerializer
     authentication_classes = (authentication.TokenAuthentication, )
     permission_classes = (permissions.IsAuthenticated, )
+
+    def get_queryset(self):
+        return self.queryset.filter(userFavorid=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(userFavorid=self.request.user)

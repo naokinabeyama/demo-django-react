@@ -41,3 +41,6 @@ class FriendViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.queryset.filter(Q(follow=self.request.user) | Q(follower=self.request.user))
+    
+    def perform_create(self, serializer):
+        serializer.save(follower=self.request.user)

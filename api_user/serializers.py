@@ -32,4 +32,4 @@ class FriendSerializer(serializers.ModelSerializer):
     class Meta:
         model = Friend
         fields = ('id', 'follow', 'follower', 'request')
-        
+        extra_kwargs = {'follower': {'read_only': True}}
