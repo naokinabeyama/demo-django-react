@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+.signOut {
+  background-color: transparent;
+  color: #444444;
+  margin-top: 4px;
+  font-size: 20px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}

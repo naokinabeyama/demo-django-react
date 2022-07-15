@@ -1,11 +1,13 @@
-import { createTheme} from '@material-ui/core/styles';
+import './App.css';
+import { createTheme } from '@material-ui/core/styles';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import grey from '@material-ui/core/colors/grey';
+import Navbar from './components/Navbar';
 
 
 const theme = createTheme({
     palette: {
-        primary: grey[300],
+        primary: grey,
         secondary: {
           main: '#11cb5f',
         },
@@ -16,10 +18,11 @@ const theme = createTheme({
 });
 
 function App() {
-  return (
-    <MuiThemeProvider theme={theme}>
-    </MuiThemeProvider>
-  );
+    return (
+        <MuiThemeProvider theme={theme}>
+            <Navbar />
+        </MuiThemeProvider>
+    );
 }
 
 export default App;
