@@ -7,7 +7,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import Avatar from '@material-ui/core/Avatar';
 import MenuItem from '@material-ui/core/MenuItem';
-import Popover from '@material-ui/core/Popover';
+import Tooltip from '@material-ui/core/Tooltip';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import Badge from '@material-ui/core/Badge';
 import { FiLogOut } from 'react-icons/fi';
@@ -37,8 +37,7 @@ const Navbar = (props) => {
         window.location.href = '/';
     };
     const [open, setOpen] = useState(false);
-    const [forcus, setForcus] = useState(false);
-    console.log(forcus)
+
 
     // Iconクリック処理
     const handleIcon = () => {
@@ -48,17 +47,9 @@ const Navbar = (props) => {
             setOpen(true)
     };
 
-    // ログアウトボタンフォーカス処理
-    const onFocus = () => {
-        setForcus(true);
-    };
-
-    const offForcus = () => {
-        setForcus(false);
-    };
-
     return (
         <AppBar position='static'>
+            {/* ハンバーガーメニュー */}
             <Toolbar>
                 <IconButton
                     size="large"
@@ -67,27 +58,15 @@ const Navbar = (props) => {
                     aria-label="menu"
                     sx={{ mr: 2 }}
                 >
-                <MenuIcon />
+                    <MenuIcon />
                 </IconButton>
+
+                {/* タイトル */}
                 <Typography variant='h5' className={classes.title}>
                     DEMO SNS
                 </Typography>
-                {/* 友達申請の数(承認してない) */}
-                {/* <Badge className={classes.bg}
-                    badgeContent={askList.filter((ask) => {
-                        return (
-                            ask.approved === false && profiles.filter((item) => {
-                                return item.userPro === ask.askFrom
-                            })[0]
-                        )
-                    }).length
-                    }
-                    color='secondary'>
-                    <NotificationsIcon />
-                </Badge> */}
-                {/* <button className='signOut' onClick={Logout()}>
-                    <FiLogOut />
-                </button> */}
+
+                {/* 画像アイコン */}
                 <div>
                     <IconButton
                         size="large"
@@ -116,41 +95,13 @@ const Navbar = (props) => {
                         <MenuItem>My account</MenuItem>
                     </Menu>
                 </div>
-                <Typography
-                    aria-owns={forcus ? 'mouse-over-popover' : undefined}
-                    aria-haspopup="true"
-                    onMouseEnter={onFocus}
-                    onMouseLeave={offForcus}
-                >
-                    aiueo
-                </Typography>
-                {/* <button className='signOut'>
-                    <FiLogOut
-                        aria-owns={forcus ? 'mouse-over-popover' : undefined}
-                        aria-haspopup="true"
-                        onMouseEnter={onFocus}
-                        onMouseLeave={offForcus}
-                    />
-                </button> */}
-                <Popover
-                    id="mouse-over-popover"
-                    open={Boolean(forcus)}
-                    anchorEl={forcus}
-                    anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                    }}
-                    transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                    }}
-                    onClose={offForcus}
-                    disableRestoreFocus
-                >
-                    <Typography sx={{ p: 1 }}>
-                        I use Popover.
-                    </Typography>
-                </Popover>
+
+                {/* ログアウトアイコン */}
+                <Tooltip title='Logout'>
+                    <button className='signOut' onClick={Logout()}>
+                        <FiLogOut />
+                    </button>
+                </Tooltip>
             </Toolbar>
         </AppBar>
     );
