@@ -52,7 +52,7 @@ const Navbar = (props) => {
             {/* ハンバーガーメニュー */}
             <Toolbar>
                 <IconButton
-                    size="large"
+                    size="medium"
                     edge="start"
                     color="inherit"
                     aria-label="menu"
@@ -69,7 +69,7 @@ const Navbar = (props) => {
                 {/* 画像アイコン */}
                 <div>
                     <IconButton
-                        size="large"
+                        size="medium"
                         aria-label="account of current user"
                         aria-controls="menu-appbar"
                         aria-haspopup="true"

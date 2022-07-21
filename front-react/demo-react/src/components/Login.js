@@ -179,7 +179,7 @@ const Login = (props) => {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography variant="h4" className={classes.title}>
-                    {state.isLoginView ? "Login" : "新規アカウント作成"}
+                    {state.isLoginView ? "Login" : "Register"}
                 </Typography>
 
                 {state.isLoginView ? (
@@ -270,7 +270,7 @@ const Login = (props) => {
                 )}
 
                 <span onClick={() => toggleView()} className={classes.span}>
-                    {state.isLoginView ? "新規アカウント作成" : "ログイン"}
+                    {state.isLoginView ? 'Create Account ?' : 'Back to Login ?'}
                 </span>
                 </div>
             </form>
