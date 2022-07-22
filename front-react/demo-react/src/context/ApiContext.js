@@ -44,14 +44,15 @@ const ApiContextProvider = (props) => {
 
     // 初期画面
     useEffect(() => {
-        console.log(token)
+        // ログインユーザーのプロフィール
         const getMyProfile = async () => {
             try {
-                const resmy = await axios.get('http://localhost:8000/api/user/myprofile/', {
+                const res = await axios.get('http://localhost:8000/api/user/myprofile/', {
                     headers: {
                         'Authorization': `Token ${token}`
                     }
                 });
+                res.data[0] && setProfile(res.data[0]);
             } catch {
                 console.log('error');
             };
@@ -215,7 +216,7 @@ const ApiContextProvider = (props) => {
 
 
     // 投稿更新
-    const editePost = async () => {
+    const editPost = async () => {
         const editData = new FormData();
         // 格納されている投稿画像
         editData.append('postImage', editedPost.postImage);
@@ -238,16 +239,65 @@ const ApiContextProvider = (props) => {
     };
 
 
+    // コメント作成
+    const createComment = async (uploadComment) => {
+        try {
+            const res = await axios.post(`http://localhost:8000/api/post/comment`, uploadComment, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}`
+                }
+            });
+            // コメント
+            setComment(res.data)
+        } catch {
+            console.log('error');
+        };
+    };
+
+
+    // コメント削除
+    const deleteComment = async () => {
+        try {
+            await axios.delete(`http://localhost:8000/api/post/comment/${comment.id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}`
+                }
+            });
+        } catch {
+            console.log('errror');
+        };
+    };
+
+
+    // お気に入り
+    // const createFavorid = async () => {
+    //     const 
+    // }
+
     return (
         <ApiContext.Provider value={{
             profile,
+            editedProfile,
+            setEditedProfile,
             profiles,
             profileImg,
+            setProfileImg,
+            comment,
+            createProfile,
+            editProfile,
+            deleteProfile,
+            createPost,
+            editPost,
+            deletePost,
+            createComment,
+            deleteComment,
 
         }}>
             {props.children}
         </ApiContext.Provider>
-    )
-}
+    );
+};
 
 export default withCookies(ApiContextProvider)

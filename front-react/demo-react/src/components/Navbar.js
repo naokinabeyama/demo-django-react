@@ -7,13 +7,16 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import Avatar from '@material-ui/core/Avatar';
 import MenuItem from '@material-ui/core/MenuItem';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@material-ui/core/Tooltip'
+import Drawer from '@material-ui/core/Drawer';
+import Box from '@material-ui/core/Box';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import Badge from '@material-ui/core/Badge';
 import { FiLogOut } from 'react-icons/fi';
 import { withCookies } from 'react-cookie';
 import { useContext, useState } from 'react';
-// import { ApiContext } from '../context/ApiContext';
+import { ApiContext } from '../context/ApiContext';
+
 
 
 
@@ -26,25 +29,29 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         textAlign: 'center',
     },
+    sideBar: {
+        width: 500,
+    },
 }));
 
 
 const Navbar = (props) => {
     const classes = useStyles();
-    // const { askList, profiles } = useContext(ApiContext);
+    const {profile} = useContext(ApiContext);
     const Logout = () => event => {
         props.cookies.remove('current-token');
         window.location.href = '/';
     };
-    const [open, setOpen] = useState(false);
+    // サイドバー
+    const [sideOpen, setSideOpen] = useState(false);
 
 
-    // Iconクリック処理
-    const handleIcon = () => {
-        open ?
-            setOpen(false)
+    //サイドバークリック処理
+    const handleSideBar = () => {
+        sideOpen ?
+            setSideOpen(false)
             :
-            setOpen(true)
+            setSideOpen(true)
     };
 
     return (
@@ -57,8 +64,17 @@ const Navbar = (props) => {
                     color="inherit"
                     aria-label="menu"
                     sx={{ mr: 2 }}
+                    onClick={handleSideBar}
                 >
                     <MenuIcon />
+                    <Drawer
+                        open={sideOpen}
+                        onClose={handleSideBar}
+                    >
+                        <Box sx={{ width: 250 }}>
+                            
+                        </Box>
+                    </Drawer>
                 </IconButton>
 
                 {/* タイトル */}
@@ -73,13 +89,15 @@ const Navbar = (props) => {
                         aria-label="account of current user"
                         aria-controls="menu-appbar"
                         aria-haspopup="true"
-                        onClick={handleIcon}
                         color="inherit"
                     >
-                        <Avatar alt="userImage" src="/static/images/man-3403180_1920.jpg" />
+                        {profile.img ?
+                            <Avatar alt="userImage" src={profile.img} />
+                            :
+                            <Avatar alt="userImage" src='http://127.0.0.1:8000/media/sampleImage/null.png' />
+                        }
                     </IconButton>
                     <Menu
-                        anchorEl={open}
                         anchorOrigin={{
                         vertical: 'top',
                         horizontal: 'right',
@@ -89,10 +107,7 @@ const Navbar = (props) => {
                         vertical: 'top',
                         horizontal: 'right',
                         }}
-                        open={Boolean(open)}
-                        onClose={handleIcon}
                     >
-                        <MenuItem>My account</MenuItem>
                     </Menu>
                 </div>
 
