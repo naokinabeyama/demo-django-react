@@ -60,6 +60,10 @@ const ApiContextProvider = (props) => {
         getMyProfile();
     }, [token, profile.id]);
 
+    // useEffect(() => {
+
+    // })
+
 
     // 新規プロフィール作成
     const createProfile = async () => {
@@ -284,6 +288,8 @@ const ApiContextProvider = (props) => {
             profiles,
             profileImg,
             setProfileImg,
+            post,
+            postFull,
             comment,
             createProfile,
             editProfile,

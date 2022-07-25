@@ -27,10 +27,9 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         flexGrow: 1,
-        textAlign: 'center',
-    },
-    sideBar: {
-        width: 500,
+        marginLeft: 30,
+        fontSize: 30,
+        fontFamily: 'Courier New',
     },
 }));
 
@@ -72,7 +71,6 @@ const Navbar = (props) => {
                         onClose={handleSideBar}
                     >
                         <Box sx={{ width: 250 }}>
-                            
                         </Box>
                     </Drawer>
                 </IconButton>
