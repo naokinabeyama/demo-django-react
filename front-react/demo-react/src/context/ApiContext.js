@@ -52,7 +52,10 @@ const ApiContextProvider = (props) => {
                         'Authorization': `Token ${token}`
                     }
                 });
+                // プロフィール
                 res.data[0] && setProfile(res.data[0]);
+                // プロフィール更新
+                res.data[0] && setEditedProfile({ id: res.data[0].id, userame: res.data[0].username, age: res.data[0].age, gender: res.data[0].gender, introduction: res.data[0].introduction });
             } catch {
                 console.log('error');
             };
@@ -75,7 +78,7 @@ const ApiContextProvider = (props) => {
         // 性別
         createData.append('gender', editedProfile.gender);
         // 自己紹介
-        createData.apppend('introduce', editedProfile.introduction);
+        createData.apppend('introduction', editedProfile.introduction);
         // プロフィール画像
         profileImg.name && createData.append('img', profileImg, profileImg.name);
         try {
