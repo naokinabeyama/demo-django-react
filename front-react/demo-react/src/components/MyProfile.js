@@ -8,8 +8,13 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import { IconButton } from '@material-ui/core';
 import { MdAddAPhoto } from 'react-icons/md';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -113,6 +118,21 @@ const MyProfile = () => {
     };
 
 
+    // プロフィール項目を変更する
+    const handleInputChange = () => event => {
+        const value = event.target.value;
+        const name = event.target.name;
+        setEditedProfile({ ...editedProfile, [name]: value });
+    };
+
+    // 性別を変更する
+    const handleGenderChange = (event) => {
+        const value = event.target.value;
+        const name = event.target.name;
+        setEditedProfile({ ...editedProfile, [name]: value });
+    }
+
+
     return (
         <>
             {/* プロフィール作成されている場合 */}
@@ -174,7 +194,6 @@ const MyProfile = () => {
                                 <BuildSharp className={classes.buildIcon} onClick={profileOpenDialog} />
                             </div>
                         </div>
-                    
                     </div>
                 </>
                 :
@@ -195,7 +214,9 @@ const MyProfile = () => {
                     </div>
                 </div>
             }
-            
+            <div>
+                {profile.introduction}
+            </div>
             {/* ダイアログ(プロフィール作成、更新) */}
             <div>
                 <Dialog open={dialogOpen} onClose={profileCloseDialog}>
@@ -219,60 +240,93 @@ const MyProfile = () => {
                             <TextField
                                 autoFocus
                                 label='userName'
+                                name='username'
                                 style={{
                                     width: 300,
                                     marginTop: 20
                                 }}
-                                defaultValue={profile.username}
+                                defaultValue={editedProfile.username}
+                                onChange={handleInputChange()}
                             />
                         </div>
                         {/* 年齢 */}
                         <div style={{textAlign: 'center'}}>
                             <TextField
                                 label='age'
+                                name='age'
                                 style={{
                                     width: 300,
                                     marginTop: 20
                                 }}
-                                defaultValue={profile.age}
+                                defaultValue={editedProfile.age}
+                                onChange={handleInputChange()}
                             />
                         </div>
                         {/* 性別 */}
-                        <div style={{textAlign: 'center'}}>
+                        <div style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                        }}>
+                            <FormControl>
+                                <InputLabel>
+                                    gender
+                                </InputLabel>
+                                <Select
+                                    value={editedProfile.gender}
+                                    label='gender'
+                                    name='gender'
+                                    style={{
+                                        width: 300,
+                                    }}
+                                    onChange={handleGenderChange}
+                                >
+                                    <MenuItem value={0}>
+                                        Other
+                                    </MenuItem>
+                                    <MenuItem value={1}>
+                                        Man
+                                    </MenuItem>
+                                    <MenuItem value={2}>
+                                        Woman
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
+                        {/* 説明文 */}
+                        <div style={{ textAlign: 'center' }}>
                             <TextField
-                                label='gender'
+                                label='introduction'
+                                name='introduction'
+                                multiline
+                                minRows={2}
                                 style={{
                                     width: 300,
                                     marginTop: 20
                                 }}
-                                defaultValue={profile.gender}
-                            />
-                        </div>
-                        {/* 説明文 */}
-                        <div style={{textAlign: 'center'}}>
-                            <TextField
-                                label='introduction'
-                                multiline
-                                rows={4}
-                               style={{
-                                    width: 300,
-                                    marginTop: 20
-                                }}
-                                defaultValue={profile.introduction}
+                                defaultValue={editedProfile.introduction}
+                                onChange={handleInputChange()}
                             />
                         </div>
                         {/* 更新ボタン */}
-                        <div style={{ textAlign: 'center', marginTop: 30 }}>
+                        <div style={{ textAlign: 'center', marginTop: 30, marginBottom: 30 }}>
                             {profile.id ? 
                                 <Button
                                     variant="contained"
-                                    onClick={profileCloseDialog}>
+                                    onClick={() => {
+                                        editProfile();
+                                        profileCloseDialog();
+                                    }}
+                                >
                                     edit
                                 </Button>
                             :
                                 <Button
                                     variant="contained"
-                                    onClick={() => createProfile()}>
+                                    onClick={() => {
+                                        createProfile();
+                                        profileCloseDialog();
+                                    }}
+                                >
                                     create
                                 </Button>
                             }

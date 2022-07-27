@@ -55,7 +55,7 @@ const ApiContextProvider = (props) => {
                 // プロフィール
                 res.data[0] && setProfile(res.data[0]);
                 // プロフィール更新
-                res.data[0] && setEditedProfile({ id: res.data[0].id, userame: res.data[0].username, age: res.data[0].age, gender: res.data[0].gender, introduction: res.data[0].introduction });
+                res.data[0] && setEditedProfile({ id: res.data[0].id, username: res.data[0].username, age: res.data[0].age, gender: res.data[0].gender, introduction: res.data[0].introduction });
             } catch {
                 console.log('error');
             };
@@ -78,7 +78,7 @@ const ApiContextProvider = (props) => {
         // 性別
         createData.append('gender', editedProfile.gender);
         // 自己紹介
-        createData.apppend('introduction', editedProfile.introduction);
+        createData.append('introduction', editedProfile.introduction);
         // プロフィール画像
         profileImg.name && createData.append('img', profileImg, profileImg.name);
         try {
@@ -154,13 +154,13 @@ const ApiContextProvider = (props) => {
         // 性別
         editData.append('gender', editedProfile.gender);
         // 自己紹介
-        editData.apppend('introduce', editedProfile.introduction);
+        editData.append('introduction', editedProfile.introduction);
         // プロフィール画像
         profileImg.name && editData.append('img', profileImg, profileImg.name);
         try {
             const res = await axios.put(`http://localhost:8000/api/user/profile/${profile.id}/`, editData, {
                 headers: {
-                    'Context-Type': 'application/json',
+                    'Content-Type': 'application/json',
                     'Authorization': `Token ${token}`
                 }
             });
