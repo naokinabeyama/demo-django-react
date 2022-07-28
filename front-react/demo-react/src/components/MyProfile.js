@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, Fragment } from 'react'
 import { ApiContext } from '../context/ApiContext';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -30,11 +30,14 @@ const useStyles = makeStyles((theme) => ({
     },
     noMyProfile: {
         display: 'flex',
-        marginLeft: 100,
         marginTop: 100,
+        margin: '0 auto',
+        width: '80%',
     },
     myProfile: {
-        marginLeft: 100,
+        display: 'flex',
+        margin: '0 auto',
+        width: '80%',
     },
     userName: {
         margin: 20,
@@ -57,9 +60,8 @@ const useStyles = makeStyles((theme) => ({
         
     },
     text: {
-        float: 'right',
-        marginTop: 50,
-        marginRight: 50,
+        marginTop: 30,
+        marginLeft: 50,
         display: 'flex',
         '& .text-box': {
             display: 'flex',
@@ -73,10 +75,22 @@ const useStyles = makeStyles((theme) => ({
         opacity: 0.4,
         fontSize: 15,
         cursor: 'pointer',
+        '&:hover': {
+            opacity: 0.3,
+        },
     },
-    introduction: {
+    myIntroduction: {
         clear: 'both',
-        margin: 20,
+        marginTop: 60,
+        margin: '0 auto',
+        width: '80%',
+    },
+    centerLine: {
+        marginTop: 150,
+        margin: '0 auto',
+        borderTop: 'double 4px',
+        color: 'gray',
+        width: '80%',
     },
 }));
 
@@ -86,8 +100,16 @@ const MyProfile = () => {
     const classes = useStyles();
     const { profile, editedProfile, setEditedProfile, deleteProfile, profileImg, setProfileImg, createProfile, editProfile, postFull } = useContext(ApiContext);
     const [dialogOpen, setDialogOpen] = useState(false);
+    // 年齢
+    const NUM = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
 
+    const NUMBER = NUM.map((number) =>
+        <MenuItem value={number}>
+            {number}
+        </MenuItem>
+    );
 
+    
     // 性別変換
     const gender = (gender) => {
         if (gender === 1) {
@@ -125,19 +147,53 @@ const MyProfile = () => {
         setEditedProfile({ ...editedProfile, [name]: value });
     };
 
-    // 性別を変更する
-    const handleGenderChange = (event) => {
+
+    // 年齢,性別を変更する
+    const handleAgeGenderChange = (event) => {
         const value = event.target.value;
         const name = event.target.name;
         setEditedProfile({ ...editedProfile, [name]: value });
     }
 
+    
+    // 紹介文
+    // const paragraph = (text) => {
+    //     const texts = text.split(/(\n)/).map((item, index) => {
+    //         return (
+    //             <Fragment key={index}>
+    //                 {item.match(/\n/) ? <br /> : item}
+    //             </Fragment>
+    //         ); 
+    //     });
+    //     return { texts };
+    // }
+
 
     return (
         <>
-            {/* プロフィール作成されている場合 */}
-            {profile.id ?
+            
+            {!profile.id ?
+                // プロフィール作成されていない場合
                 <>
+                    <div className={classes.noMyProfile}>
+                        {/* プロフィール画像 */}
+                        <img src='http://127.0.0.1:8000/media/sampleImage/null.png' alt='profile' className={classes.profileImage} />
+                        <div className={classes.createPro}>
+                            <Button
+                                style={{
+                                    width: 500, height: 50
+                                }}
+                                variant="contained"
+                                onClick={profileOpenDialog}
+                            >
+                                Create Profile
+                            </Button>
+                        </div>
+                    </div>
+                </>
+            :
+                <>
+                    {/* プロフィール作成されている場合 */}
                     {/* ユーザーネーム */}
                     <Typography variant='h4' className={classes.userName}>{profile.username}</Typography>
 
@@ -195,28 +251,21 @@ const MyProfile = () => {
                             </div>
                         </div>
                     </div>
-                </>
-                :
-                // プロフィール作成されていない場合
-                <div className={classes.noMyProfile}>
-                    {/* プロフィール画像 */}
-                    <img src='http://127.0.0.1:8000/media/sampleImage/null.png' alt='profile' className={classes.profileImage} />
-                    <div className={classes.createPro}>
-                        <Button
-                            style={{
-                                width: 500, height: 50
-                            }}
-                            variant="contained"
-                            onClick={profileOpenDialog}
-                        >
-                            Create Profile
-                        </Button>
+                
+                    {/* 説明文 */}
+                    <div className={classes.myIntroduction}>
+                        <Typography>
+                            {profile.introduction}
+                        </Typography>
+                        {/* {paragraph(profile.introduction)} */}
                     </div>
-                </div>
+
+
+                    <div className={classes.centerLine}></div>
+                </>
             }
-            <div>
-                {profile.introduction}
-            </div>
+
+
             {/* ダイアログ(プロフィール作成、更新) */}
             <div>
                 <Dialog open={dialogOpen} onClose={profileCloseDialog}>
@@ -224,10 +273,10 @@ const MyProfile = () => {
                         {/* 設定タイトル */}
                         <DialogTitle style={{ textAlign: 'center' }}>ProfileEdit</DialogTitle>
                         {/* プロフィール画像 */}
-                        <div style={{textAlign: 'center'}}>
+                        <div style={{ textAlign: 'center' }}>
                             {profile.id ?
                                 <img src={profile.img} alt='profile' className={classes.createImage} />
-                            :
+                                :
                                 <img src='http://127.0.0.1:8000/media/sampleImage/null.png' alt='profile' className={classes.createImage} />
                             }
                             <input type='file' id='imageInput' hidden='hidden' onChange={(event) => { setProfileImg(event.target.files[0]); event.target.value = '' }} />
@@ -236,7 +285,7 @@ const MyProfile = () => {
                             </IconButton>
                         </div>
                         {/* ユーザーネーム */}
-                        <div style={{textAlign: 'center'}}>
+                        <div style={{ textAlign: 'center' }}>
                             <TextField
                                 autoFocus
                                 label='userName'
@@ -250,17 +299,26 @@ const MyProfile = () => {
                             />
                         </div>
                         {/* 年齢 */}
-                        <div style={{textAlign: 'center'}}>
-                            <TextField
-                                label='age'
-                                name='age'
-                                style={{
-                                    width: 300,
-                                    marginTop: 20
-                                }}
-                                defaultValue={editedProfile.age}
-                                onChange={handleInputChange()}
-                            />
+                        <div style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                        }}>
+                            <FormControl>
+                                <InputLabel>
+                                    age
+                                </InputLabel>
+                                <Select
+                                    value={editedProfile.age}
+                                    label='age'
+                                    name='age'
+                                    style={{
+                                        width: 300,
+                                    }}
+                                    onChange={handleAgeGenderChange}
+                                >
+                                    {NUMBER}
+                                </Select>
+                            </FormControl>
                         </div>
                         {/* 性別 */}
                         <div style={{
@@ -278,7 +336,7 @@ const MyProfile = () => {
                                     style={{
                                         width: 300,
                                     }}
-                                    onChange={handleGenderChange}
+                                    onChange={handleAgeGenderChange}
                                 >
                                     <MenuItem value={0}>
                                         Other
@@ -309,7 +367,7 @@ const MyProfile = () => {
                         </div>
                         {/* 更新ボタン */}
                         <div style={{ textAlign: 'center', marginTop: 30, marginBottom: 30 }}>
-                            {profile.id ? 
+                            {profile.id ?
                                 <Button
                                     variant="contained"
                                     onClick={() => {
@@ -319,7 +377,7 @@ const MyProfile = () => {
                                 >
                                     edit
                                 </Button>
-                            :
+                                :
                                 <Button
                                     variant="contained"
                                     onClick={() => {
@@ -335,7 +393,7 @@ const MyProfile = () => {
                 </Dialog>
             </div>
         </>
-    )
-}
+    );
+};
 
 export default MyProfile

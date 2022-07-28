@@ -42,7 +42,7 @@ const ApiContextProvider = (props) => {
     const [favorid, setFavorid] = useState([]);
 
 
-    // 初期画面
+    // 初期画面(プロフィール)
     useEffect(() => {
         // ログインユーザーのプロフィール
         const getMyProfile = async () => {
@@ -55,17 +55,54 @@ const ApiContextProvider = (props) => {
                 // プロフィール
                 res.data[0] && setProfile(res.data[0]);
                 // プロフィール更新
-                res.data[0] && setEditedProfile({ id: res.data[0].id, username: res.data[0].username, age: res.data[0].age, gender: res.data[0].gender, introduction: res.data[0].introduction });
+                res.data[0] && setEditedProfile({
+                    id: res.data[0].id,
+                    username: res.data[0].username,
+                    age: res.data[0].age,
+                    gender: res.data[0].gender,
+                    introduction: res.data[0].introduction
+                });
             } catch {
                 console.log('error');
             };
         };
+        // 全ユーザーの投稿
+        const getAllPost = async () => {
+            try {
+                const res = await axios.get('http://localhost:8000/api/post/article/', {
+                    headers: {
+                        'Authorization': `Token ${token}`
+                    }
+                });
+                // 全ユーザーの投稿
+                setPostFull(res.data);
+            } catch {
+                console.log('error')
+            };
+        };
+        getAllPost();
         getMyProfile();
     }, [token, profile.id]);
 
-    // useEffect(() => {
 
-    // })
+    // // 初期画面(投稿)
+    // useEffect(() => {
+    //     // 全ユーザーの投稿
+    //     const getAllPost = async () => {
+    //         try {
+    //             const res = await axios.get('http://localhost:8000/api/post/article/', {
+    //                 headers: {
+    //                     'Authorization': `Token ${token}`
+    //                 }
+    //             });
+    //             // 全ユーザーの投稿
+    //             setPostFull(res.data);
+    //         } catch {
+    //             console.log('error')
+    //         };
+    //     };
+    //     getAllPost();
+    // }, [token, post.id, profile.id]);
 
 
     // 新規プロフィール作成
@@ -302,7 +339,6 @@ const ApiContextProvider = (props) => {
             deletePost,
             createComment,
             deleteComment,
-
         }}>
             {props.children}
         </ApiContext.Provider>
