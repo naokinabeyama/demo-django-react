@@ -44,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
     },
     profileImage: {
-        width: 150,
-        height: 150,
+        width: 160,
+        height: 160,
         objectFit: 'cover',
         maxWidth: '100%',
         borderRadius: '50%',
@@ -83,13 +83,6 @@ const useStyles = makeStyles((theme) => ({
         clear: 'both',
         marginTop: 60,
         margin: '0 auto',
-        width: '80%',
-    },
-    centerLine: {
-        marginTop: 150,
-        margin: '0 auto',
-        borderTop: 'double 4px',
-        color: 'gray',
         width: '80%',
     },
 }));
@@ -261,7 +254,7 @@ const MyProfile = () => {
                     </div>
 
 
-                    <div className={classes.centerLine}></div>
+                   
                 </>
             }
 

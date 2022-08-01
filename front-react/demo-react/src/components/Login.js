@@ -146,7 +146,7 @@ const Login = (props) => {
                     headers: { 'Content-Type': 'application/json' }
                 });
                 props.cookies.set('current-token', res.data.token);
-                res.data.token ? window.location.href = '/profiles' : window.location.href = '/';
+                res.data.token ? window.location.href = '/myprofile' : window.location.href = '/';
                 dispatch({ type: FETCH_SUCCESS });
             } catch {
                 dispatch({ type: ERROR_CATCHED });

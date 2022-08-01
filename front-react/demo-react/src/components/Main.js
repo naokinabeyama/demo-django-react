@@ -1,24 +1,28 @@
-
 import MyProfile from './MyProfile'
 import MyPost from './MyPost'
-import { useContext } from 'react';
-import {ApiContext} from '../context/ApiContext';
+import { makeStyles } from '@material-ui/core/styles';
+
+
+
+const useStyles = makeStyles((theme) => ({
+  centerLine: {
+    marginTop: 130,
+    margin: '0 auto',
+    borderTop: 'double 4px',
+    color: 'gray',
+    width: '80%',
+  },
+}));
+
 
 const Main = () => {
-  const { profile, postFull } = useContext(ApiContext);
-  
-  //自分の全投稿
-  const myPostFull = postFull.filter((post) => {
-      return post.userPost === profile.userPro
-  });
-  const myPostList = myPostFull && (myPostFull.map((mypost) => 
-    <MyPost key={mypost.id} myPostData={mypost} myPostImg={myPostFull} />
-  ));
+  const classes = useStyles();
 
   return (
     <>
-      <MyProfile />
-      {myPostList}
+        <MyProfile />
+        <div className={classes.centerLine}></div>
+        <MyPost />
     </>
   )
 }

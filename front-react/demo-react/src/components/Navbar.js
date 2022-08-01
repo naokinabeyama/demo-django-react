@@ -16,6 +16,9 @@ import { FiLogOut } from 'react-icons/fi';
 import { withCookies } from 'react-cookie';
 import { useContext, useState } from 'react';
 import { ApiContext } from '../context/ApiContext';
+import List from '@material-ui/core/List';
+import ListItemText from '@material-ui/core/ListItemText';
+import { Link, useHistory } from 'react-router-dom';
 
 
 
@@ -36,13 +39,22 @@ const useStyles = makeStyles((theme) => ({
 
 const Navbar = (props) => {
     const classes = useStyles();
-    const {profile} = useContext(ApiContext);
+    const history = useHistory();
+    const { profile } = useContext(ApiContext);
+    // ログアウト
     const Logout = () => event => {
         props.cookies.remove('current-token');
         window.location.href = '/';
     };
     // サイドバー
     const [sideOpen, setSideOpen] = useState(false);
+
+
+    const profilesList = () => {
+        history.push({
+            pathname: '/profile',
+        });
+    };
 
 
     //サイドバークリック処理
@@ -71,6 +83,14 @@ const Navbar = (props) => {
                         onClose={handleSideBar}
                     >
                         <Box sx={{ width: 250 }}>
+                            <List>
+                                <ListItemText>
+                                    <Link onClick={profilesList}>
+                                        ProfilesList
+                                    </Link>
+                                </ListItemText>
+                            </List>
+                            
                         </Box>
                     </Drawer>
                 </IconButton>

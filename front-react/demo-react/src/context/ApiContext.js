@@ -44,6 +44,19 @@ const ApiContextProvider = (props) => {
 
     // 初期画面(プロフィール)
     useEffect(() => {
+        // 全ユーザーのプロフィール
+        const getProfileList = async () => {
+            try {
+                const res = await axios.get('http://localhost:8000/api/user/profile/', {
+                    headers: {
+                        'Authorization': `Token ${token}`
+                    }
+                });
+                setProfiles(res.data);
+            } catch {
+                console.log('error');
+            };
+        };
         // ログインユーザーのプロフィール
         const getMyProfile = async () => {
             try {
@@ -81,6 +94,7 @@ const ApiContextProvider = (props) => {
             };
         };
         getAllPost();
+        getProfileList();
         getMyProfile();
     }, [token, profile.id]);
 

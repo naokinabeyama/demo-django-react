@@ -4,6 +4,7 @@ import App from "./App";
 import { Route, BrowserRouter } from 'react-router-dom';
 import Login from './components/Login';
 import {CookiesProvider} from 'react-cookie';
+import ProfileList from "./components/ProfileList";
 
 
 const routing = (
@@ -11,7 +12,8 @@ const routing = (
     <BrowserRouter>
       <CookiesProvider>
         <Route exact path='/' component={Login} />
-        <Route exact path='/profiles' component={App} />
+        <Route exact path='/myprofile' component={App} />
+        <Route exact path='/profile' component={ProfileList} />
       </CookiesProvider>
     </BrowserRouter>
   </StrictMode>

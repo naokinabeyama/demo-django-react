@@ -5,6 +5,11 @@ import grey from '@material-ui/core/colors/grey';
 import Navbar from './components/Navbar';
 import ApiContextProvider from './context/ApiContext';
 import Main from './components/Main';
+import Footer from './components/Footer';
+import { Route, Switch } from 'react-router-dom';
+import ProfileList from "./components/ProfileList";
+import AllRouter from './router/AllRouter';
+
 
 
 const theme = createTheme({
@@ -24,9 +29,12 @@ function App() {
         <ApiContextProvider>
             <MuiThemeProvider theme={theme}>
                 <Navbar />
-                <Main />
+                <Switch>
+                    {/* <AllRouter /> */}
+                    {/* <Route exact path='/profile' component={ProfileList} /> */}
+                </Switch>
+                <Footer />
             </MuiThemeProvider>
-
         </ApiContextProvider>
     );
 }
