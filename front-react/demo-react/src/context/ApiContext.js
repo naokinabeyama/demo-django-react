@@ -60,7 +60,29 @@ const ApiContextProvider = (props) => {
         // ログインユーザーのプロフィール
         const getMyProfile = async () => {
             try {
-                const res = await axios.get('http://localhost:8000/api/user/myprofile/', {
+                const res = await axios.get(`http://localhost:8000/api/user/myprofile/`, {
+                    headers: {
+                        'Authorization': `Token ${token}`
+                    }
+                });
+                // プロフィール
+                res.data[0] && setProfile(res.data[0]);
+                // プロフィール更新
+                res.data[0] && setEditedProfile({
+                    id: res.data[0].id,
+                    username: res.data[0].username,
+                    age: res.data[0].age,
+                    gender: res.data[0].gender,
+                    introduction: res.data[0].introduction
+                });
+            } catch {
+                console.log('error');
+            };
+        };
+        // ログインユーザー以外のユーザープロフィール
+        const getProfile = async () => {
+            try {
+                const res = await axios.get(`http://localhost:8000/api/user/profile/${profile.id}'`, {
                     headers: {
                         'Authorization': `Token ${token}`
                     }
@@ -93,6 +115,7 @@ const ApiContextProvider = (props) => {
                 console.log('error')
             };
         };
+        getProfileList();
         getAllPost();
         getProfileList();
         getMyProfile();

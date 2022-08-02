@@ -38,8 +38,8 @@ const useStyles = makeStyles((theme) => ({
 
 
 const Navbar = (props) => {
-    const classes = useStyles();
     const history = useHistory();
+    const classes = useStyles();
     const { profile } = useContext(ApiContext);
     // ログアウト
     const Logout = () => event => {
@@ -50,12 +50,6 @@ const Navbar = (props) => {
     const [sideOpen, setSideOpen] = useState(false);
 
 
-    const profilesList = () => {
-        history.push({
-            pathname: '/profile',
-        });
-    };
-
 
     //サイドバークリック処理
     const handleSideBar = () => {
@@ -64,6 +58,13 @@ const Navbar = (props) => {
             :
             setSideOpen(true)
     };
+
+    //myprofileに遷移
+    const handleMyProfile = () => {
+        history.push({
+            pathname: '/myprofile',
+        })
+    }
 
     return (
         <AppBar position='static'>
@@ -85,10 +86,16 @@ const Navbar = (props) => {
                         <Box sx={{ width: 250 }}>
                             <List>
                                 <ListItemText>
-                                    <Link onClick={profilesList}>
+                                    <Link to='/profileList'>
                                         ProfilesList
                                     </Link>
                                 </ListItemText>
+                                <ListItemText>
+                                    <Link to='/postList'>
+                                        PostList
+                                    </Link>
+                                </ListItemText>
+                                
                             </List>
                             
                         </Box>
@@ -108,6 +115,7 @@ const Navbar = (props) => {
                         aria-controls="menu-appbar"
                         aria-haspopup="true"
                         color="inherit"
+                        onClick={handleMyProfile}
                     >
                         {profile.img ?
                             <Avatar alt="userImage" src={profile.img} />

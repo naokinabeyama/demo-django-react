@@ -27,7 +27,7 @@ const MyPost = () => {
     });
     
     return (
-        <>
+        <div>
             {/* タイトル */}
             <Typography variant='h4' className={classes.postTitle}>List of articles</Typography>
             {/* 画像一覧 */}
@@ -46,7 +46,7 @@ const MyPost = () => {
                     ))
                 )};
             </ImageList>
-        </>
+        </div>
     );
 };
 

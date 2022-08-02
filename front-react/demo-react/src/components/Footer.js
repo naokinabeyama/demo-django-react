@@ -5,7 +5,7 @@ import { Typography } from '@material-ui/core';
 const useStyles = makeStyles((theme) => ({
     footer: {
         marginTop: 100,
-        backgroundColor: "gray",
+        backgroundColor: "grey",
         width: '100%',
         position: "absolute",
         height: 35,
