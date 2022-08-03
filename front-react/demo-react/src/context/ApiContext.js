@@ -82,7 +82,7 @@ const ApiContextProvider = (props) => {
         // ログインユーザー以外のユーザープロフィール
         const getProfile = async () => {
             try {
-                const res = await axios.get(`http://localhost:8000/api/user/profile/${profile.id}'`, {
+                const res = await axios.get(`http://localhost:8000/api/user/profile/${profile.id}`, {
                     headers: {
                         'Authorization': `Token ${token}`
                     }
@@ -115,7 +115,7 @@ const ApiContextProvider = (props) => {
                 console.log('error')
             };
         };
-        getProfileList();
+        getProfile();
         getAllPost();
         getProfileList();
         getMyProfile();

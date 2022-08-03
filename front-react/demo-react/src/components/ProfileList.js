@@ -31,15 +31,6 @@ const ProfileList = () => {
     const { profile, profiles } = useContext(ApiContext);
 
 
-    const handleProfile = (allPro) => {
-        history.push({
-            pathname: `/profile/${allPro.id}`,
-            state: {
-                allPro: allPro,
-            }
-        })
-    }
-
     // 自分以外の全ユーザープロフィール
     const filterProfiles = profiles.filter((prof) => {
         return prof.id !== profile.id
@@ -54,8 +45,8 @@ const ProfileList = () => {
             <div style={{width: '70%', margin:'0 auto'}}>
             {filterProfiles && (
                 filterProfiles.map((allPro) => 
-                <div key={allPro.id} onClick={handleProfile(allPro)}>
-                    <Card style={{ position: 'relative', display: 'flex', marginBottom: 30 }}>
+                    <Link key={allPro.id} to={{ pathname: '/profile/' + allPro.id, state: { pro: allPro } }}>
+                    <Card style={{ position: 'relative', display: 'flex', marginBottom: 30 }} >
                         {/* アバター画像の有無 */}
                         {allPro.img ? (
                             <CardMedia style={{ minWidth: 100, height: 100 }} image={allPro.img} />
@@ -70,7 +61,7 @@ const ProfileList = () => {
                             <Typography>{allPro.created_at}</Typography>
                         </CardContent>
                     </Card>
-                </div>
+                </Link>
                 )
             )}
             </div>

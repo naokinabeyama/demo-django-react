@@ -9,6 +9,7 @@ router = DefaultRouter()
 router.register('profile', views.ProfileViewSet)
 router.register('friend', views.FriendViewSet)
 
+
 urlpatterns = [
     path('create/', views.CreateUserView.as_view(), name='create'),
     path('myprofile/', views.MyProfileListView.as_view(), name='myprofile'),

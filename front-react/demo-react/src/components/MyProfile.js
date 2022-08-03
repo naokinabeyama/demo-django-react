@@ -1,4 +1,4 @@
-import { useContext, useState, Fragment } from 'react'
+import { useContext, useState, Fragment, useEffect } from 'react'
 import { ApiContext } from '../context/ApiContext';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -14,6 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { IconButton } from '@material-ui/core';
 import { MdAddAPhoto } from 'react-icons/md';
+import { useLocation } from 'react-router-dom';
 
 
 
@@ -90,9 +91,26 @@ const useStyles = makeStyles((theme) => ({
 
 
 const MyProfile = () => {
+    const location = useLocation();
     const classes = useStyles();
     const { profile, editedProfile, setEditedProfile, deleteProfile, profileImg, setProfileImg, createProfile, editProfile, postFull } = useContext(ApiContext);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [state, setState] = useState(false);
+
+
+    // 初期
+    useEffect(() => {
+        // 自分のプロフィール判定
+        const profileJudg = () => {
+            location.state ?
+                setState(true)
+                :
+                setState(false)
+                
+        };
+        profileJudg();
+    }, [location.state]);
+
     // 年齢
     const NUM = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100];
 
@@ -146,7 +164,7 @@ const MyProfile = () => {
         const value = event.target.value;
         const name = event.target.name;
         setEditedProfile({ ...editedProfile, [name]: value });
-    }
+    };
 
     
     // 紹介文
@@ -164,7 +182,6 @@ const MyProfile = () => {
     
     return (
         <>
-            
             {!profile.id ?
                 // プロフィール作成されていない場合
                 <>
@@ -186,73 +203,143 @@ const MyProfile = () => {
                 </>
             :
                 <>
-                    {/* プロフィール作成されている場合 */}
-                    {/* ユーザーネーム */}
-                    <Typography variant='h4' className={classes.userName}>{profile.username}</Typography>
+                    {/* 他ユーザーの詳細 */}
+                    {state ?
+                        <>
+                            {/* プロフィール作成されている場合  */}
+                            {/* ユーザーネーム */}
+                            <Typography variant='h4' className={classes.userName}>{location.state.pro.username}</Typography>
 
-                    <div className={classes.myProfile}>
-                        {/* プロフィール画像 */}
-                        <img src={profile.img} className={classes.profileImage} />
-                        <div className={classes.text}>
-                            <Grid container spacing={3}>
-                                {/* フォロー */}
-                                <Grid item xs={2} sm={2} md={4}>
-                                    <div className='text-box'>
-                                        <Typography>follow:</Typography>
-                                        <Typography className='text-value'>0</Typography>
-                                    </div>
-                                </Grid>
-                                {/* フォロワー */}
-                                <Grid item xs={2} sm={2} md={4}>
-                                    <div className='text-box'>
-                                        <Typography>follower:</Typography>
-                                        <Typography className='text-value'>0</Typography>
-                                    </div>
-                                </Grid>
-                                {/* 友達 */}
-                                <Grid item xs={2} sm={2} md={4}>
-                                    <div className='text-box'>
-                                        <Typography>friends:</Typography>
-                                        <Typography className='text-value'>0</Typography>
-                                    </div>
-                                </Grid>
-                                {/* 年齢 */}
-                                <Grid item xs={2} sm={2} md={4}>
-                                    <div className='text-box'>
-                                        <Typography>age:</Typography>
-                                        <Typography className='text-value'>{profile.age}</Typography>
-                                    </div>
-                                </Grid>
-                                {/* 性別 */}
-                                <Grid item xs={2} sm={2} md={4}>
-                                    <div className='text-box'>
-                                        <Typography>gender:</Typography>
-                                        <Typography className='text-value'>{gender(profile.gender)}</Typography>
-                                    </div>
-                                </Grid>
-                                {/* 更新日 */}
-                                <Grid item xs={2} sm={2} md={4}>
-                                    <div className='text-box'>
-                                        <Typography>updated_at:</Typography>
-                                        <Typography className='text-value'>{profile.updated_at}</Typography>
-                                    </div>
-                                </Grid>
-                            </Grid>
-                            {/* プロフィール設定ボタン */}
-                            <div>
-                                <BuildSharp className={classes.buildIcon} onClick={profileOpenDialog} />
+                            <div className={classes.myProfile}>
+                                {/* プロフィール画像 */}
+                                <img src={location.state.pro.img} className={classes.profileImage} />
+                                <div className={classes.text}>
+                                    <Grid container spacing={3}>
+                                        {/* フォロー */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>follow:</Typography>
+                                                <Typography className='text-value'>0</Typography>
+                                            </div>
+                                        </Grid>
+                                        {/* フォロワー */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>follower:</Typography>
+                                                <Typography className='text-value'>0</Typography>
+                                            </div>
+                                        </Grid>
+                                        {/* 友達 */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>friends:</Typography>
+                                                <Typography className='text-value'>0</Typography>
+                                            </div>
+                                        </Grid>
+                                        {/* 年齢 */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>age:</Typography>
+                                                <Typography className='text-value'>{location.state.pro.age}</Typography>
+                                            </div>
+                                        </Grid>
+                                        {/* 性別 */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>gender:</Typography>
+                                                <Typography className='text-value'>{gender(location.state.pro.gender)}</Typography>
+                                            </div>
+                                        </Grid>
+                                        {/* 更新日 */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>updated_at:</Typography>
+                                                <Typography className='text-value'>{location.state.pro.updated_at}</Typography>
+                                            </div>
+                                        </Grid>
+                                    </Grid>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                
-                    {/* 説明文 */}
-                    <div className={classes.myIntroduction}>
-                        <Typography>
-                            {profile.introduction}
-                        </Typography>
-                        {/* {paragraph(profile.introduction)} */}
-                    </div>
+                        
+                            {/* 説明文 */}
+                            <div className={classes.myIntroduction}>
+                                <Typography>
+                                    {location.state.pro.introduction}
+                                </Typography>
+                                {/* {paragraph(profile.introduction)} */}
+                            </div>
+                        </>
+                    :
+                        // ログインユーザー詳細
+                        <>
+                            {/* プロフィール作成されている場合  */}
+                            {/* ユーザーネーム */}
+                            <Typography variant='h4' className={classes.userName}>{profile.username}</Typography>
 
+                            <div className={classes.myProfile}>
+                                {/* プロフィール画像 */}
+                                <img src={profile.img} className={classes.profileImage} />
+                                <div className={classes.text}>
+                                    <Grid container spacing={3}>
+                                        {/* フォロー */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>follow:</Typography>
+                                                <Typography className='text-value'>0</Typography>
+                                            </div>
+                                        </Grid>
+                                        {/* フォロワー */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>follower:</Typography>
+                                                <Typography className='text-value'>0</Typography>
+                                            </div>
+                                        </Grid>
+                                        {/* 友達 */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>friends:</Typography>
+                                                <Typography className='text-value'>0</Typography>
+                                            </div>
+                                        </Grid>
+                                        {/* 年齢 */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>age:</Typography>
+                                                <Typography className='text-value'>{profile.age}</Typography>
+                                            </div>
+                                        </Grid>
+                                        {/* 性別 */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>gender:</Typography>
+                                                <Typography className='text-value'>{gender(profile.gender)}</Typography>
+                                            </div>
+                                        </Grid>
+                                        {/* 更新日 */}
+                                        <Grid item xs={2} sm={2} md={4}>
+                                            <div className='text-box'>
+                                                <Typography>updated_at:</Typography>
+                                                <Typography className='text-value'>{profile.updated_at}</Typography>
+                                            </div>
+                                        </Grid>
+                                    </Grid>
+                                    {/* プロフィール設定ボタン */}
+                                    <div>
+                                        <BuildSharp className={classes.buildIcon} onClick={profileOpenDialog} />
+                                    </div>
+                                </div>
+                            </div>
+                        
+                            {/* 説明文 */}
+                            <div className={classes.myIntroduction}>
+                                <Typography>
+                                    {profile.introduction}
+                                </Typography>
+                                {/* {paragraph(profile.introduction)} */}
+                                    </div>
+                        </>
+                    }
 
                    
                 </>

@@ -1,6 +1,10 @@
 import MyProfile from './MyProfile'
 import MyPost from './MyPost'
 import { makeStyles } from '@material-ui/core/styles';
+import { useContext } from 'react';
+import ApiContext from '../context/ApiContext';
+
+
 
 
 
@@ -17,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Main = () => {
   const classes = useStyles();
+
 
   return (
     <>

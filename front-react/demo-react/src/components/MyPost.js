@@ -1,10 +1,11 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import ImageListItem from "@material-ui/core/ImageListItem";
 import ImageListItemBar from "@material-ui/core/ImageListItemBar";
 import ImageList from "@material-ui/core/ImageList";
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { useLocation } from 'react-router-dom';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -18,13 +19,35 @@ const useStyles = makeStyles((theme) => ({
 
 
 const MyPost = () => {
+    const location = useLocation();
     const classes = useStyles();
     const { profile, postFull } = useContext(ApiContext);
+    const [state, setState] = useState(false);
+    
 
-    //自分の全投稿
-    const myPostFull = postFull.filter((post) => {
-        return post.userPost === profile.userPro
-    });
+    // 初期
+    useEffect(() => {
+        // 自分の投稿判定
+        const postJudg = () => {
+            location.state ?
+                setState(true)
+                :
+                setState(false)
+        };
+        postJudg();
+    }, [location.state]);
+
+
+    // 投稿判定
+    const myPostFull = !state ?
+        postFull.filter((post) => {
+            return post.userPost === profile.userPro
+        })
+        :
+        postFull.filter((post) => {
+            return post.userPost === location.state.pro.userPro
+        })
+    
     
     return (
         <div>
