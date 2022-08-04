@@ -15,6 +15,7 @@ import Select from '@material-ui/core/Select';
 import { IconButton } from '@material-ui/core';
 import { MdAddAPhoto } from 'react-icons/md';
 import { useLocation } from 'react-router-dom';
+import { BsTrash } from 'react-icons/bs';
 
 
 
@@ -93,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
 const MyProfile = () => {
     const location = useLocation();
     const classes = useStyles();
-    const { profile, editedProfile, setEditedProfile, deleteProfile, profileImg, setProfileImg, createProfile, editProfile, postFull } = useContext(ApiContext);
+    const { profile, editedProfile, setEditedProfile, deleteProfile, profileImg, setProfileImg, createProfile, editProfile } = useContext(ApiContext);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [state, setState] = useState(false);
 
@@ -469,6 +470,8 @@ const MyProfile = () => {
                                 </Button>
                             }
                         </div>
+                        {/* 削除ボタン */}
+                        <button className='trash' onClick={() => { deleteProfile(); profileCloseDialog(); }}><BsTrash /></button>
                     </div>
                 </Dialog>
             </div>

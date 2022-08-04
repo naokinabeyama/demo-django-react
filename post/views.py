@@ -5,6 +5,9 @@ from core import custompermissions
 
 
 
+
+
+
 # 投稿
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()

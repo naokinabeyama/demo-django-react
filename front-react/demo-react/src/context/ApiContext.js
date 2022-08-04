@@ -119,27 +119,7 @@ const ApiContextProvider = (props) => {
         getAllPost();
         getProfileList();
         getMyProfile();
-    }, [token, profile.id]);
-
-
-    // // 初期画面(投稿)
-    // useEffect(() => {
-    //     // 全ユーザーの投稿
-    //     const getAllPost = async () => {
-    //         try {
-    //             const res = await axios.get('http://localhost:8000/api/post/article/', {
-    //                 headers: {
-    //                     'Authorization': `Token ${token}`
-    //                 }
-    //             });
-    //             // 全ユーザーの投稿
-    //             setPostFull(res.data);
-    //         } catch {
-    //             console.log('error')
-    //         };
-    //     };
-    //     getAllPost();
-    // }, [token, post.id, profile.id]);
+    }, [token, profile.id, post.id]);
 
 
     // 新規プロフィール作成
@@ -256,7 +236,7 @@ const ApiContextProvider = (props) => {
         // 説明
         createData.append('text', editedPost.text);
         try {
-            const res = await axios.post('http://localhost:8000/api/article/', createData, {
+            const res = await axios.post('http://localhost:8000/api/post/article/', createData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Token ${token}`
@@ -366,6 +346,8 @@ const ApiContextProvider = (props) => {
             profileImg,
             setProfileImg,
             post,
+            editedPost,
+            setEditedPost,
             postFull,
             comment,
             createProfile,
