@@ -277,7 +277,7 @@ const ApiContextProvider = (props) => {
 
 
     // 投稿更新
-    const editPost = async () => {
+    const editPost = async (id) => {
         const editData = new FormData();
         // 格納されている投稿画像
         editData.append('postImage', editedPost.postImage);
@@ -286,7 +286,7 @@ const ApiContextProvider = (props) => {
         // 説明
         editData.append('text', editedPost.text);
         try {
-            const res = await axios.put(`http://localhost:8000/api/post/article/${post.id}/`, editData, {
+            const res = await axios.put(`http://localhost:8000/api/post/article/${id}/`, editData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Token ${token}`

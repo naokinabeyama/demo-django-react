@@ -6,12 +6,24 @@ import { MdAddAPhoto } from 'react-icons/md';
 
 
 
+
 const useStyles = makeStyles((theme) => ({
     title: {
         marginTop: 40,
         marginBottom: 50,
         textAlign: 'center',
-
+    },
+    postImage: {
+        width: 400,
+        height: 450,
+        objectFit: 'cover',
+        maxWidth: '100%',
+        // borderRadius: '50%',
+        backgroundColor: 'silver',
+    },
+    dialog: {
+        height: 1000,
+        width: 500,
     },
 }));
 
@@ -51,7 +63,7 @@ const PostList = () => {
 
     // 画像投稿
     const handleImageInput = () => event => {
-        const value = event.target.files[0].name
+        const value = event.target.files[0]
         const name = event.target.name;
         setEditedPost({ ...editedPost, [name]: value });
     };
@@ -65,8 +77,9 @@ const PostList = () => {
                     <div className={classes.dialog}>
                         {/* 設定タイトル */}
                         <DialogTitle style={{ textAlign: 'center' }}>CreatePost</DialogTitle>
-                        {/* プロフィール画像 */}
+                        {/* 投稿画像 */}
                         <div style={{ textAlign: 'center' }}>
+                            <img src='http://127.0.0.1:8000/media/sampleImage/null.png' alt='profile' className={classes.postImage} />
                             <input type='file'
                                 id='imageInput'
                                 name='postImage'
@@ -117,6 +130,7 @@ const PostList = () => {
                     </div>
                 </Dialog>
             </div>
+            
             <div className={classes.title}>
                 <Typography variant='h3'>
                     PostList

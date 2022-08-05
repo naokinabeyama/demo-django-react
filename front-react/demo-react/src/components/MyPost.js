@@ -13,7 +13,18 @@ const useStyles = makeStyles((theme) => ({
     postTitle: {
         margin: 40,
         textAlign: 'center',
-
+    },
+    postImage: {
+        width: 400,
+        height: 450,
+        objectFit: 'cover',
+        maxWidth: '100%',
+        // borderRadius: '50%',
+        backgroundColor: 'silver',
+    },
+    dialog: {
+        height: 1000,
+        width: 500,
     },
 }));
 
@@ -25,6 +36,7 @@ const MyPost = () => {
     const { profile, postFull, editedPost, setEditedPost, editPost } = useContext(ApiContext);
     const [state, setState] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [postDetail, setPostDetail] = useState([]);
     
 
     // 初期
@@ -59,7 +71,12 @@ const MyPost = () => {
     // プロフィールフォーム非表示
     const postCloseDialog = () => {
         setDialogOpen(false);
+        setPostDetail([]);
     };
+
+    const handlePostDetail = (mypost) => {
+        setPostDetail(mypost);
+    }
     
     // 投稿項目を変更する
     const handleInputChange = () => event => {
@@ -67,6 +84,15 @@ const MyPost = () => {
         const name = event.target.name;
         setEditedPost({ ...editedPost, [name]: value });
     };
+
+
+    // 画像投稿
+    const handleImageInput = () => event => {
+        const value = event.target.files[0]
+        const name = event.target.name;
+        setEditedPost({ ...editedPost, [name]: value });
+    };
+
     
     // 画像ファイルを表示
     const handleEditPicture = () => {
@@ -86,7 +112,10 @@ const MyPost = () => {
                 {myPostFull && (
                     myPostFull.map((mypost) => (
                         
-                        <ImageListItem key={mypost.id} style={{height: 300}} onClick={postOpenDialog}>
+                        <ImageListItem key={mypost.id} style={{ height: 300 }} onClick={() => {
+                            postOpenDialog();
+                            handlePostDetail(mypost);
+                        }}>
                             <img
                                 src={mypost.postImage}
                                 alt={mypost.title}
@@ -105,12 +134,13 @@ const MyPost = () => {
                     <div className={classes.dialog}>
                         {/* 設定タイトル */}
                         <DialogTitle style={{ textAlign: 'center' }}>ProfileEdit</DialogTitle>
-                        {/* プロフィール画像 */}
+                        {/* 投稿画像 */}
                         <div style={{ textAlign: 'center' }}>
-                            
-                            <img src={editedPost.postImage} alt='post' className={classes.createImage} />
-
-                            {/* <input type='file' id='imageInput' hidden='hidden' onChange={(event) => { setProfileImg(event.target.files[0]); event.target.value = '' }} /> */}
+                            <img src={postDetail.postImage} alt='post' className={classes.postImage} />
+                            <input type='file'
+                                id='imageInput'
+                                name='postImage'
+                                onChange={handleImageInput()} />
                             <IconButton onClick={handleEditPicture}>
                                 <MdAddAPhoto className='photo' />
                             </IconButton>
@@ -125,7 +155,7 @@ const MyPost = () => {
                                     width: 300,
                                     marginTop: 20
                                 }}
-                                defaultValue={editedPost.title}
+                                defaultValue={postDetail.title}
                                 onChange={handleInputChange()}
                                 />
                         </div>
@@ -140,7 +170,7 @@ const MyPost = () => {
                                     width: 300,
                                     marginTop: 20
                                 }}
-                                defaultValue={editedPost.text}
+                                defaultValue={postDetail.text}
                                 onChange={handleInputChange()}
                                 />
                         </div>
@@ -149,7 +179,7 @@ const MyPost = () => {
                             <Button
                             variant="contained"
                             onClick={() => {
-                                editPost();
+                                editPost(postDetail.id);
                                 postCloseDialog();
                             }}
                             >

@@ -360,7 +360,7 @@ const MyProfile = () => {
                                 :
                                 <img src='http://127.0.0.1:8000/media/sampleImage/null.png' alt='profile' className={classes.createImage} />
                             }
-                            <input type='file' id='imageInput' hidden='hidden' onChange={(event) => { setProfileImg(event.target.files[0]); event.target.value = '' }} />
+                            <input type='file' id='imageInput'  onChange={(event) => { setProfileImg(event.target.files[0]); event.target.value = '' }} />
                             <IconButton onClick={handleEditPicture}>
                                 <MdAddAPhoto className='photo' />
                             </IconButton>
