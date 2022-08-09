@@ -3,7 +3,7 @@ import { useContext, useState } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import { makeStyles } from '@material-ui/core/styles';
 import { MdAddAPhoto } from 'react-icons/md';
-
+import { BsTrash } from 'react-icons/bs';
 
 
 
@@ -13,17 +13,41 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 50,
         textAlign: 'center',
     },
+    postItem: {
+        cursor: 'pointer',
+        '&:hover': {
+            opacity: 0.7,
+        },
+    },
     postImage: {
         width: 400,
         height: 450,
         objectFit: 'cover',
         maxWidth: '100%',
-        // borderRadius: '50%',
         backgroundColor: 'silver',
     },
     dialog: {
         height: 1000,
         width: 500,
+    },
+    postDetail: {
+        display: 'flex',
+        margin: 10,
+    },
+    profileImg: {
+        width: 50,
+        height: 50,
+        objectFit: 'cover',
+        maxWidth: '100%',
+        borderRadius: '50%',
+        backgroundColor: 'silver',
+    },
+    profileName: {
+        margin: 15,
+    },
+    postTitle: {
+        display: 'flex',
+        margin: '0 auto',
     },
 }));
 
@@ -31,19 +55,25 @@ const useStyles = makeStyles((theme) => ({
 
 const PostList = () => {
     const classes = useStyles();
-    const { postFull, createPost, setEditedPost, editedPost } = useContext(ApiContext);
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const { profile, profiles, post, setPost, postFull, createPost, setEditedPost, editedPost, deletePost } = useContext(ApiContext);
+    // 新規投稿ダイアログ
+    const [createDialogOpen, setCreateDialogOpen] = useState(false);
+    // 投稿詳細ダイアログ
+    const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+    const [name, setName] = useState('');
+    const [userImg, setUserImg] = useState('');
+
 
 
 
     // 投稿フォーム表示
-    const postOpenDialog = () => {
-        setDialogOpen(true);
+    const postCreateOpenDialog = () => {
+        setCreateDialogOpen(true);
     };
 
     // 投稿フォーム非表示
-    const postCloseDialog = () => {
-        setDialogOpen(false);
+    const postCreateCloseDialog = () => {
+        setCreateDialogOpen(false);
     };
 
 
@@ -68,15 +98,40 @@ const PostList = () => {
         setEditedPost({ ...editedPost, [name]: value });
     };
 
+    // 投稿詳細
+    const handlePostDetail = (postList) => {
+        setPost(postList);
+        // 投稿ユーザー
+        const postUser = profiles.filter((user) => {
+            return user.userPro === postList.userPost
+        });
+        setName(postUser[0].username);
+        setUserImg(postUser[0].img);
+    };
+
+    // 投稿詳細表示
+    const postDetailOpenDialog = () => {
+        setDetailDialogOpen(true);
+    };
+
+    // 投稿詳細非表示
+    const postDetailCloseDialog = () => {
+        setDetailDialogOpen(false);
+    };
+
+
+
 
     return (
         <>
-            <button onClick={postOpenDialog}>createpost</button>
+            <button onClick={postCreateOpenDialog}>createpost</button>
+            {/* 新規投稿 */}
             <div>
-                <Dialog open={dialogOpen} onClose={postCloseDialog}>
+                <Dialog open={createDialogOpen} onClose={postCreateCloseDialog}>
                     <div className={classes.dialog}>
                         {/* 設定タイトル */}
-                        <DialogTitle style={{ textAlign: 'center' }}>CreatePost</DialogTitle>
+                        <DialogTitle style={{ textAlign: 'center' }}>CreatePost
+                        </DialogTitle>
                         {/* 投稿画像 */}
                         <div style={{ textAlign: 'center' }}>
                             <img src='http://127.0.0.1:8000/media/sampleImage/null.png' alt='profile' className={classes.postImage} />
@@ -121,7 +176,7 @@ const PostList = () => {
                                 variant="contained"
                                 onClick={() => {
                                     createPost();
-                                    postCloseDialog();
+                                    postCreateCloseDialog();
                                 }}
                             >
                                 create
@@ -141,7 +196,10 @@ const PostList = () => {
                 {/* 画像の有無 */}
                 {postFull && (
                     postFull.map((postList) => (
-                        <ImageListItem key={postList.id} style={{height: 200}}>
+                        <ImageListItem className={classes.postItem} key={postList.id} style={{height: 200}} onClick={() => {
+                            handlePostDetail(postList);
+                            postDetailOpenDialog();
+                        }}>
                             <img
                                 src={postList.postImage}
                                 alt={postList.title}
@@ -152,6 +210,99 @@ const PostList = () => {
                     ))
                 )};
             </ImageList>
+
+
+            {/* ダイアログ(詳細、更新) */}
+            <div>
+                <Dialog open={detailDialogOpen} onClose={postDetailCloseDialog}>
+                     <div className={classes.dialog}>
+                        {/* 詳細タイトル */}
+                        <div className={classes.postDetail}>
+                            <img className={classes.profileImg} src={userImg} alt='profileImg' />
+                            <Typography className={classes.profileName}>{name}</Typography>
+                        </div>
+                        {/* ログインユーザーの投稿なら編集できる */}
+                        {profile.userPro === post.userPost ?
+                            <>
+                            {/* 投稿画像 */}
+                            <div style={{ textAlign: 'center' }}>
+                                <img src={post.postImage} alt='post' className={classes.postImage} />
+                                <input
+                                    type='file'
+                                    id='imageInput'
+                                    name='postImage'
+                                    hidden='hidden'
+                                    onChange={handleImageInput()} />
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <IconButton onClick={handleEditPicture}>
+                                    <MdAddAPhoto className='photo' />
+                                </IconButton>
+                            </div>
+                            {/* タイトル */}
+                            <div style={{ textAlign: 'center' }}>
+                                <TextField
+                                    label='title'
+                                    name='title'
+                                    style={{
+                                        width: 300,
+                                        marginTop: 20
+                                    }}
+                                    defaultValue={post.title}
+                                    onChange={handleInputChange()}
+                                    />
+                            </div>
+                            {/* 説明文 */}
+                            <div style={{ textAlign: 'center' }}>
+                                <TextField
+                                    label='text'
+                                    name='text'
+                                    multiline
+                                    minRows={2}
+                                    style={{
+                                        width: 300,
+                                        marginTop: 20
+                                    }}
+                                    defaultValue={post.text}
+                                    onChange={handleInputChange()}
+                                    />
+                            </div>
+                            {/* 更新ボタン */}
+                            <div style={{ textAlign: 'center', marginTop: 30, marginBottom: 30 }}>
+                                <Button
+                                variant="contained"
+                                onClick={() => {
+                                    // editPost(post.id);
+                                    postDetailCloseDialog();
+                                }}
+                                >
+                                    edit
+                                </Button>
+                            </div>
+                            {/* 削除ボタン */}
+                            <button className='trash' onClick={() => { deletePost(); postDetailCloseDialog(); }}><BsTrash /></button>
+                            </>
+                        :
+                            <>
+                            {/* 投稿画像 */}
+                            <div style={{ textAlign: 'center' }}>
+                                <img src={post.postImage} alt='post' className={classes.postImage} />
+                            </div>
+                            {/* タイトル */}
+                            <div className={classes.postTitle}>
+                                <Typography>title</Typography>
+                                <Typography>{post.title}</Typography>
+                            </div>
+                            {/* 説明文 */}
+                            <div style={{ textAlign: 'center' }}>
+                                <Typography>text</Typography>
+                               <Typography>{post.text}</Typography>
+                            </div>
+                            </>
+                        }
+                    </div>
+                </Dialog>
+            </div>
         </>
     );
 };

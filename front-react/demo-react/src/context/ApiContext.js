@@ -115,11 +115,38 @@ const ApiContextProvider = (props) => {
                 console.log('error')
             };
         };
+        // 投稿詳細
+        const getPost = async () => {
+            if (post.id) {
+                try {
+                    const res = await axios.get(`http://localhost:8000/api/post/article/${post.id}`, {
+                        headers: {
+                            'Authorization': `Token ${token}`
+                        }
+                    });
+                    // 投稿
+                    res.data && setPost(res.data);
+                    // 投稿更新
+                    res.data && setEditedPost({
+                        id: res.data.id,
+                        postImage: res.data.postImage,
+                        title: res.data.title,
+                        text: res.data.text,
+                    });
+                    
+                } catch {
+                    console.log('error');
+                };
+            };
+        };
+
+        getPost();
         getProfile();
         getAllPost();
         getProfileList();
         getMyProfile();
     }, [token, profile.id, post.id]);
+
 
 
     // 新規プロフィール作成
@@ -279,6 +306,8 @@ const ApiContextProvider = (props) => {
     // 投稿更新
     const editPost = async (id) => {
         const editData = new FormData();
+        console.log(post.postImage)
+        console.log(editedPost.postImage)
         // 格納されている投稿画像
         editData.append('postImage', editedPost.postImage);
         // タイトル
@@ -346,6 +375,7 @@ const ApiContextProvider = (props) => {
             profileImg,
             setProfileImg,
             post,
+            setPost,
             editedPost,
             setEditedPost,
             postFull,

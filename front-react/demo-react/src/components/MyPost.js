@@ -7,9 +7,16 @@ import { Button, Dialog, DialogTitle, IconButton, TextField, Typography } from '
 import { makeStyles } from '@material-ui/core/styles';
 import { useLocation } from 'react-router-dom';
 import { MdAddAPhoto } from 'react-icons/md';
+import { BsTrash } from 'react-icons/bs';
 
 
 const useStyles = makeStyles((theme) => ({
+    postItem: {
+        cursor: 'pointer',
+        '&:hover': {
+            opacity: 0.7,
+        },
+    },
     postTitle: {
         margin: 40,
         textAlign: 'center',
@@ -19,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
         height: 450,
         objectFit: 'cover',
         maxWidth: '100%',
-        // borderRadius: '50%',
         backgroundColor: 'silver',
     },
     dialog: {
@@ -33,11 +39,10 @@ const useStyles = makeStyles((theme) => ({
 const MyPost = () => {
     const location = useLocation();
     const classes = useStyles();
-    const { profile, postFull, editedPost, setEditedPost, editPost } = useContext(ApiContext);
+    const { profile, postFull, post, setPost, editedPost, setEditedPost, editPost, deletePost } = useContext(ApiContext);
     const [state, setState] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [postDetail, setPostDetail] = useState([]);
-    
+
 
     // 初期
     useEffect(() => {
@@ -49,7 +54,7 @@ const MyPost = () => {
                 setState(false)
         };
         postJudg();
-    }, [location.state]);
+    }, [location.state, editPost]);
 
 
     // 投稿判定
@@ -63,20 +68,23 @@ const MyPost = () => {
         })
 
     
-    // プロフィールフォーム表示
+    // 投稿フォーム表示
     const postOpenDialog = () => {
         setDialogOpen(true);
     };
 
-    // プロフィールフォーム非表示
+    // 投稿フォーム非表示
     const postCloseDialog = () => {
         setDialogOpen(false);
-        setPostDetail([]);
+        setPost([]);
     };
 
+
+    // 投稿詳細表示
     const handlePostDetail = (mypost) => {
-        setPostDetail(mypost);
+        setPost(mypost);
     }
+
     
     // 投稿項目を変更する
     const handleInputChange = () => event => {
@@ -88,9 +96,9 @@ const MyPost = () => {
 
     // 画像投稿
     const handleImageInput = () => event => {
-        const value = event.target.files[0]
+        const value = event.target.files[0];
         const name = event.target.name;
-        setEditedPost({ ...editedPost, [name]: value });
+        setEditedPost({ ...editedPost, [name]: value })
     };
 
     
@@ -101,9 +109,9 @@ const MyPost = () => {
     };
     
     
+
     return (
         <div>
-            
             {/* タイトル */}
             <Typography variant='h4' className={classes.postTitle}>List of articles</Typography>
             {/* 画像一覧 */}
@@ -111,8 +119,7 @@ const MyPost = () => {
                 {/* 画像の有無 */}
                 {myPostFull && (
                     myPostFull.map((mypost) => (
-                        
-                        <ImageListItem key={mypost.id} style={{ height: 300 }} onClick={() => {
+                        <ImageListItem className={classes.postItem} key={mypost.id} style={{ height: 300 }} onClick={() => {
                             postOpenDialog();
                             handlePostDetail(mypost);
                         }}>
@@ -123,12 +130,11 @@ const MyPost = () => {
                             />
                             <ImageListItemBar title={mypost.title} />
                         </ImageListItem>
-              
                     ))
                 )};
             </ImageList>
 
-            {/* ダイアログ(プロフィール作成、更新) */}
+            {/* ダイアログ(投稿、更新) */}
             <div>
                 <Dialog open={dialogOpen} onClose={postCloseDialog}>
                     <div className={classes.dialog}>
@@ -136,11 +142,15 @@ const MyPost = () => {
                         <DialogTitle style={{ textAlign: 'center' }}>ProfileEdit</DialogTitle>
                         {/* 投稿画像 */}
                         <div style={{ textAlign: 'center' }}>
-                            <img src={postDetail.postImage} alt='post' className={classes.postImage} />
-                            <input type='file'
+                            <img src={post.postImage} alt='post' className={classes.postImage} />
+                            <input
+                                type='file'
                                 id='imageInput'
                                 name='postImage'
+                                hidden='hidden'
                                 onChange={handleImageInput()} />
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
                             <IconButton onClick={handleEditPicture}>
                                 <MdAddAPhoto className='photo' />
                             </IconButton>
@@ -155,7 +165,7 @@ const MyPost = () => {
                                     width: 300,
                                     marginTop: 20
                                 }}
-                                defaultValue={postDetail.title}
+                                defaultValue={post.title}
                                 onChange={handleInputChange()}
                                 />
                         </div>
@@ -170,7 +180,7 @@ const MyPost = () => {
                                     width: 300,
                                     marginTop: 20
                                 }}
-                                defaultValue={postDetail.text}
+                                defaultValue={post.text}
                                 onChange={handleInputChange()}
                                 />
                         </div>
@@ -179,7 +189,7 @@ const MyPost = () => {
                             <Button
                             variant="contained"
                             onClick={() => {
-                                editPost(postDetail.id);
+                                editPost(post.id);
                                 postCloseDialog();
                             }}
                             >
@@ -187,7 +197,7 @@ const MyPost = () => {
                             </Button>
                         </div>
                         {/* 削除ボタン */}
-                        {/* <button className='trash' onClick={() => { deleteProfile(); profileCloseDialog(); }}><BsTrash /></button> */}
+                        <button className='trash' onClick={() => { deletePost(); postCloseDialog(); }}><BsTrash /></button>
                     </div>
                 </Dialog>
             </div>
