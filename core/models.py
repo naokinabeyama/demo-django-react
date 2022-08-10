@@ -133,7 +133,7 @@ class Comment(models.Model):
         db_table = 'Comment'
     
     def __str__(self):
-        return Post.title + ':' + self.comment
+        return str(self.postComment.title) + ':' + self.comment
 
 
 # お気に入り

@@ -38,7 +38,9 @@ const ApiContextProvider = (props) => {
     });
     // コメント
     const [comment, setComment] = useState([]);
-    // お気に入り
+    // 全コメント
+    const [commentFull, setCommentFull] = useState([]);
+     // お気に入り
     const [favorid, setFavorid] = useState([]);
 
 
@@ -81,24 +83,26 @@ const ApiContextProvider = (props) => {
         };
         // ログインユーザー以外のユーザープロフィール
         const getProfile = async () => {
-            try {
-                const res = await axios.get(`http://localhost:8000/api/user/profile/${profile.id}`, {
-                    headers: {
-                        'Authorization': `Token ${token}`
-                    }
-                });
-                // プロフィール
-                res.data[0] && setProfile(res.data[0]);
-                // プロフィール更新
-                res.data[0] && setEditedProfile({
-                    id: res.data[0].id,
-                    username: res.data[0].username,
-                    age: res.data[0].age,
-                    gender: res.data[0].gender,
-                    introduction: res.data[0].introduction
-                });
-            } catch {
-                console.log('error');
+            if (profile.id) {
+                try {
+                    const res = await axios.get(`http://localhost:8000/api/user/profile/${profile.id}`, {
+                        headers: {
+                            'Authorization': `Token ${token}`
+                        }
+                    });
+                    // プロフィール
+                    res.data[0] && setProfile(res.data[0]);
+                    // プロフィール更新
+                    res.data[0] && setEditedProfile({
+                        id: res.data[0].id,
+                        username: res.data[0].username,
+                        age: res.data[0].age,
+                        gender: res.data[0].gender,
+                        introduction: res.data[0].introduction
+                    });
+                } catch {
+                    console.log('error');
+                };
             };
         };
         // 全ユーザーの投稿
@@ -147,6 +151,24 @@ const ApiContextProvider = (props) => {
         getMyProfile();
     }, [token, profile.id, post.id]);
 
+
+    useEffect(() => {
+        // 全ユーザーのコメント
+        const getPostComment = async () => {
+            try {
+                const res = await axios.get('http://localhost:8000/api/post/comment/', {
+                    headers: {
+                        'Authorization': `Token ${token}`
+                    }
+                });
+                // 全ユーザーのコメント
+                setCommentFull(res.data);
+            } catch {
+                console.log('error')
+            };
+        };
+        getPostComment();
+    }, [token, post.id, comment.id]);
 
 
     // 新規プロフィール作成
@@ -306,8 +328,6 @@ const ApiContextProvider = (props) => {
     // 投稿更新
     const editPost = async (id) => {
         const editData = new FormData();
-        console.log(post.postImage)
-        console.log(editedPost.postImage)
         // 格納されている投稿画像
         editData.append('postImage', editedPost.postImage);
         // タイトル
@@ -330,9 +350,12 @@ const ApiContextProvider = (props) => {
 
 
     // コメント作成
-    const createComment = async (uploadComment) => {
+    const createComment = async (id) => {
+        const createData = new FormData();
+        createData.append('postComment', id);
+        createData.append('comment', comment.comment);
         try {
-            const res = await axios.post(`http://localhost:8000/api/post/comment`, uploadComment, {
+            const res = await axios.post(`http://localhost:8000/api/post/comment/`, createData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Token ${token}`
@@ -380,6 +403,8 @@ const ApiContextProvider = (props) => {
             setEditedPost,
             postFull,
             comment,
+            setComment,
+            commentFull,
             createProfile,
             editProfile,
             deleteProfile,

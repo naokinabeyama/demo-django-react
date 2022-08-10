@@ -1,10 +1,11 @@
-import { Button, Dialog, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, TextField, Typography } from '@material-ui/core';
-import { useContext, useState } from 'react';
+import { Button, Card, CardContent, CardMedia, Dialog, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, TextField, Typography } from '@material-ui/core';
+import { useContext, useEffect, useState } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import { makeStyles } from '@material-ui/core/styles';
 import { MdAddAPhoto } from 'react-icons/md';
 import { BsTrash } from 'react-icons/bs';
-
+import { MdChatBubbleOutline } from 'react-icons/md';
+import StarBorderIcon from '@material-ui/icons/StarBorder';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -35,19 +36,41 @@ const useStyles = makeStyles((theme) => ({
         margin: 10,
     },
     profileImg: {
-        width: 50,
-        height: 50,
+        width: 40,
+        height: 40,
         objectFit: 'cover',
         maxWidth: '100%',
         borderRadius: '50%',
         backgroundColor: 'silver',
     },
     profileName: {
-        margin: 15,
+        margin: 10,
+    },
+    icons: {
+        textAlign: 'right',
+        marginRight: 50,
+        '& .icons-star': {
+            marginRight: 10,
+        },
+        '& .icons-comment': {
+            fontSize: 21,
+        },
     },
     postTitle: {
+        marginTop: 10,
+        marginLeft: 80,
         display: 'flex',
-        margin: '0 auto',
+        '& .text-title': {
+            marginRight: 30,
+        },
+        '& .text-value': {
+           marginLeft: 30,
+        },
+    },
+    postText: {
+        marginTop: 30,
+        marginLeft: 80,
+        marginBottom: 20,
     },
 }));
 
@@ -55,14 +78,18 @@ const useStyles = makeStyles((theme) => ({
 
 const PostList = () => {
     const classes = useStyles();
-    const { profile, profiles, post, setPost, postFull, createPost, setEditedPost, editedPost, deletePost } = useContext(ApiContext);
+    const { profile, profiles, post, setPost, postFull, createPost, setEditedPost, editedPost, deletePost, createComment, comment, setComment, commentFull } = useContext(ApiContext);
     // 新規投稿ダイアログ
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     // 投稿詳細ダイアログ
     const [detailDialogOpen, setDetailDialogOpen] = useState(false);
     const [name, setName] = useState('');
     const [userImg, setUserImg] = useState('');
-
+    const [commentOpen, setCommentOpen] = useState(false);
+    // 投稿コメント
+    const commentFilter = commentFull.filter((comment) => {
+        return post.id === comment.postComment
+    });
 
 
 
@@ -117,8 +144,50 @@ const PostList = () => {
     // 投稿詳細非表示
     const postDetailCloseDialog = () => {
         setDetailDialogOpen(false);
+        setCommentOpen(false);
     };
 
+    // コメント表示
+    const postCommentOpen = () => {
+        setCommentOpen(true);
+    }
+
+    // コメント非表示
+    const postCommentClose = () => {
+        setCommentOpen(false);
+    }
+
+    // 新規コメント
+    const handleCreateComment = () => event => {
+        const value = event.target.value;
+        const name = event.target.name;
+        setComment({ ...comment, [name]: value }); 
+    }
+
+    // コメントしたユーザープロフィール画像
+    const commentProfileImg = (commentUserId) => {
+        const commentPro = profiles.filter((item) => {
+            return commentUserId === item.userPro
+        });
+        return commentPro[0].img;
+    };
+
+    // コメントしたユーザーネーム
+    const commentProfileName = (commentUserId) => {
+        const commentPro = profiles.filter((item) => {
+            return commentUserId === item.userPro
+        });
+        return commentPro[0].username;
+    };
+     
+
+    // コメント作成後textfieldを空に
+    const resetValue = () => {
+        const textForm = document.getElementById('commentText');
+        textForm.value = '';
+    };
+        
+    
 
 
 
@@ -224,80 +293,151 @@ const PostList = () => {
                         {/* ログインユーザーの投稿なら編集できる */}
                         {profile.userPro === post.userPost ?
                             <>
-                            {/* 投稿画像 */}
-                            <div style={{ textAlign: 'center' }}>
-                                <img src={post.postImage} alt='post' className={classes.postImage} />
-                                <input
-                                    type='file'
-                                    id='imageInput'
-                                    name='postImage'
-                                    hidden='hidden'
-                                    onChange={handleImageInput()} />
-                            </div>
-                            <div style={{ textAlign: 'center' }}>
-                                <IconButton onClick={handleEditPicture}>
-                                    <MdAddAPhoto className='photo' />
-                                </IconButton>
-                            </div>
-                            {/* タイトル */}
-                            <div style={{ textAlign: 'center' }}>
-                                <TextField
-                                    label='title'
-                                    name='title'
-                                    style={{
-                                        width: 300,
-                                        marginTop: 20
+                                {/* 投稿画像 */}
+                                <div style={{ textAlign: 'center' }}>
+                                    <img src={post.postImage} alt='post' className={classes.postImage} />
+                                    <input
+                                        type='file'
+                                        id='imageInput'
+                                        name='postImage'
+                                        hidden='hidden'
+                                        onChange={handleImageInput()} />
+                                </div>
+                                <div style={{ textAlign: 'center' }}>
+                                    <IconButton onClick={handleEditPicture}>
+                                        <MdAddAPhoto className='photo' />
+                                    </IconButton>
+                                </div>
+                                {/* タイトル */}
+                                <div style={{ textAlign: 'center' }}>
+                                    <TextField
+                                        label='title'
+                                        name='title'
+                                        style={{
+                                            width: 300,
+                                            marginTop: 20
+                                        }}
+                                        defaultValue={post.title}
+                                        onChange={handleInputChange()}
+                                        />
+                                </div>
+                                {/* 説明文 */}
+                                <div style={{ textAlign: 'center' }}>
+                                    <TextField
+                                        label='text'
+                                        name='text'
+                                        multiline
+                                        minRows={2}
+                                        style={{
+                                            width: 300,
+                                            marginTop: 20
+                                        }}
+                                        defaultValue={post.text}
+                                        onChange={handleInputChange()}
+                                        />
+                                </div>
+                                {/* 更新ボタン */}
+                                <div style={{ textAlign: 'center', marginTop: 30, marginBottom: 30 }}>
+                                    <Button
+                                    variant="contained"
+                                    onClick={() => {
+                                        // editPost(post.id);
+                                        postDetailCloseDialog();
                                     }}
-                                    defaultValue={post.title}
-                                    onChange={handleInputChange()}
-                                    />
-                            </div>
-                            {/* 説明文 */}
-                            <div style={{ textAlign: 'center' }}>
-                                <TextField
-                                    label='text'
-                                    name='text'
-                                    multiline
-                                    minRows={2}
-                                    style={{
-                                        width: 300,
-                                        marginTop: 20
-                                    }}
-                                    defaultValue={post.text}
-                                    onChange={handleInputChange()}
-                                    />
-                            </div>
-                            {/* 更新ボタン */}
-                            <div style={{ textAlign: 'center', marginTop: 30, marginBottom: 30 }}>
-                                <Button
-                                variant="contained"
-                                onClick={() => {
-                                    // editPost(post.id);
-                                    postDetailCloseDialog();
-                                }}
-                                >
-                                    edit
-                                </Button>
-                            </div>
-                            {/* 削除ボタン */}
-                            <button className='trash' onClick={() => { deletePost(); postDetailCloseDialog(); }}><BsTrash /></button>
+                                    >
+                                        edit
+                                    </Button>
+                                </div>
+                                {/* 削除ボタン */}
+                                <button className='trash' onClick={() => { deletePost(); postDetailCloseDialog(); }}><BsTrash /></button>
                             </>
                         :
                             <>
-                            {/* 投稿画像 */}
-                            <div style={{ textAlign: 'center' }}>
-                                <img src={post.postImage} alt='post' className={classes.postImage} />
-                            </div>
-                            {/* タイトル */}
-                            <div className={classes.postTitle}>
-                                <Typography>title</Typography>
-                                <Typography>{post.title}</Typography>
-                            </div>
-                            {/* 説明文 */}
-                            <div style={{ textAlign: 'center' }}>
-                                <Typography>text</Typography>
-                               <Typography>{post.text}</Typography>
-                            </div>
+                                {/* 投稿画像 */}
+                                <div style={{ textAlign: 'center' }}>
+                                    <img src={post.postImage} alt='post' className={classes.postImage} />
+                                </div>
+                                {/* icon */}
+                                <div className={classes.icons}>
+                                    {/* お気に入り */}
+                                    <StarBorderIcon className='icons-star' />
+                                    {/* コメント */}
+                                    <MdChatBubbleOutline
+                                        className='icons-comment'
+                                        onClick={postCommentOpen}
+                                    />
+                                </div>
+                                {/* タイトル */}
+                                <div className={classes.postTitle}>
+                                    <Typography className='text-title'>title:</Typography>
+                                    <Typography className='text-value'>{post.title}</Typography>
+                                </div>
+                                {/* 説明文 */}
+                                <div className={classes.postText}>
+                                    <Typography>text:</Typography>
+                                    <Typography>{post.text}</Typography>
+                                </div>
+
+                                
+                                {/* コメント一覧 */}
+                                {commentOpen &&
+                                    <div>
+                                        <p>comment</p>
+                                        {commentFilter && 
+                                            (commentFilter.map((com) => (
+                                                
+                                                <div key={com.id}>
+                                                    <Card style={{ position: 'relative', display: 'flex', marginBottom: 30 }} >
+                                                        {/* アバター画像の有無 */}
+                                                        {commentProfileImg(com.userComment) ? (
+                                                            <CardMedia style={{ minWidth: 70, height: 70 }} image={commentProfileImg(com.userComment)} />
+                                                        ):(
+                                                            <CardMedia style={{ minWidth: 70, height: 70 }} image='http://127.0.0.1:8000/media/image/null.png' />
+                                                        )}
+                                                        <CardContent style={{ padding: 5 }}>
+                                                            <div style={{display: 'flex'}}>
+                                                                {/* ユーザーネーム */}
+                                                                <Typography style={{fontSize: 13, fontWeight: 'bolder'}}>{commentProfileName(com.userComment)}</Typography>
+                                                                {/* 作成日時 */}
+                                                                <Typography style={{marginLeft: 15, opacity: 0.5, fontSize: 13}}>{com.created_at}</Typography>
+                                                            </div>
+                                                            <div style={{marginTop: 5}}>
+                                                                {/* コメント */}
+                                                                <Typography>{com.comment}</Typography>
+
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                </div>
+                                            )))
+                                        }
+                                        <button onClick={postCommentClose}>close</button>
+                                        <TextField
+                                            id='commentText'
+                                            label='comment'
+                                            name='comment'
+                                            multiline
+                                            minRows={2}
+                                            style={{
+                                                width: 300,
+                                                marginTop: 20
+                                            }}
+                                            
+                                            onChange={handleCreateComment()}
+                                        />
+                                        <Button
+                                            variant="contained"
+                                            onClick={() => {
+                                                createComment(post.id);
+                                                resetValue();
+                                            }}
+                                        >
+                                            comment
+                                        </Button>
+                                    </div>
+                                }
+                                
+                                
                             </>
                         }
                     </div>
