@@ -143,7 +143,6 @@ const ApiContextProvider = (props) => {
                 };
             };
         };
-
         getPost();
         getProfile();
         getAllPost();
@@ -154,7 +153,7 @@ const ApiContextProvider = (props) => {
 
     useEffect(() => {
         // 全ユーザーのコメント
-        const getPostComment = async () => {
+        const getPostCommentAll = async () => {
             try {
                 const res = await axios.get('http://localhost:8000/api/post/comment/', {
                     headers: {
@@ -167,8 +166,8 @@ const ApiContextProvider = (props) => {
                 console.log('error')
             };
         };
-        getPostComment();
-    }, [token, post.id, comment.id]);
+        getPostCommentAll();
+    }, [token, post.id, commentFull]);
 
 
     // 新規プロフィール作成
@@ -315,6 +314,15 @@ const ApiContextProvider = (props) => {
                     'Authorization': `Token ${token}`
                 }
             });
+            // 投稿
+            setPost([]);
+            // 投稿更新
+            setEditedPost({
+                id: '',
+                postImage: '',
+                title: '',
+                text: ''
+            });
             // コメント
             setComment([]);
             // お気に入り
@@ -370,14 +378,16 @@ const ApiContextProvider = (props) => {
 
 
     // コメント削除
-    const deleteComment = async () => {
+    const deleteComment = async (commentId) => {
         try {
-            await axios.delete(`http://localhost:8000/api/post/comment/${comment.id}`, {
+            await axios.delete(`http://localhost:8000/api/post/comment/${commentId}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Token ${token}`
                 }
             });
+            // コメント
+            setComment([]);
         } catch {
             console.log('errror');
         };

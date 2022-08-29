@@ -1,11 +1,13 @@
 import { Button, Card, CardContent, CardMedia, Dialog, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, TextField, Typography } from '@material-ui/core';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import { makeStyles } from '@material-ui/core/styles';
 import { MdAddAPhoto } from 'react-icons/md';
 import { BsTrash } from 'react-icons/bs';
-import { MdChatBubbleOutline } from 'react-icons/md';
+import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
+import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
+import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -49,11 +51,19 @@ const useStyles = makeStyles((theme) => ({
     icons: {
         textAlign: 'right',
         marginRight: 50,
+        cursor: 'pointer',
+        color: 'grey',
         '& .icons-star': {
             marginRight: 10,
+            '&:hover': {
+                color: '#FFD700', 
+            },
         },
         '& .icons-comment': {
             fontSize: 21,
+            '&:hover': {
+                color: '#444444',
+            },
         },
     },
     postTitle: {
@@ -72,13 +82,39 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 80,
         marginBottom: 20,
     },
+    deleteBtn: {
+        color: 'grey',
+        cursor: 'pointer',
+        '&:hover': {
+            color: '#444444',
+        },
+    },
+    commentTitle: {
+        marginLeft: 5,
+        marginBottom: 10,
+    },
+    commentField: {
+        textAlign: 'center',
+    },
+    commentBtn: {
+        textAlign: 'center',
+        marginTop: 15,
+    },
+    dialogClose: {
+        textAlign: 'right',
+        cursor: 'pointer',
+        color: 'grey',
+        '&:hover': {
+            color: '#444444',
+        },
+    },
 }));
 
 
 
 const PostList = () => {
     const classes = useStyles();
-    const { profile, profiles, post, setPost, postFull, createPost, setEditedPost, editedPost, deletePost, createComment, comment, setComment, commentFull } = useContext(ApiContext);
+    const { profile, profiles, post, setPost, postFull, createPost, setEditedPost, editedPost, deletePost, createComment, comment, setComment, commentFull, deleteComment} = useContext(ApiContext);
     // 新規投稿ダイアログ
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     // 投稿詳細ダイアログ
@@ -86,6 +122,7 @@ const PostList = () => {
     const [name, setName] = useState('');
     const [userImg, setUserImg] = useState('');
     const [commentOpen, setCommentOpen] = useState(false);
+    const [commentValue, setCommentValue] = useState(false);
     // 投稿コメント
     const commentFilter = commentFull.filter((comment) => {
         return post.id === comment.postComment
@@ -147,20 +184,29 @@ const PostList = () => {
         setCommentOpen(false);
     };
 
-    // コメント表示
+    // コメント表示非表示
     const postCommentOpen = () => {
-        setCommentOpen(true);
+        {commentOpen ?
+            setCommentOpen(false)
+        :
+            setCommentOpen(true)
+        }
     }
 
     // コメント非表示
-    const postCommentClose = () => {
-        setCommentOpen(false);
-    }
+    // const postCommentClose = () => {
+    //     setCommentOpen(false);
+    // }
 
     // 新規コメント
     const handleCreateComment = () => event => {
         const value = event.target.value;
         const name = event.target.name;
+        {!value || !value.match(/\S/g) ? 
+            setCommentValue(false)
+        :
+            setCommentValue(true)
+        }
         setComment({ ...comment, [name]: value }); 
     }
 
@@ -284,7 +330,7 @@ const PostList = () => {
             {/* ダイアログ(詳細、更新) */}
             <div>
                 <Dialog open={detailDialogOpen} onClose={postDetailCloseDialog}>
-                     <div className={classes.dialog}>
+                    <div className={classes.dialog}>
                         {/* 詳細タイトル */}
                         <div className={classes.postDetail}>
                             <img className={classes.profileImg} src={userImg} alt='profileImg' />
@@ -362,7 +408,7 @@ const PostList = () => {
                                     {/* お気に入り */}
                                     <StarBorderIcon className='icons-star' />
                                     {/* コメント */}
-                                    <MdChatBubbleOutline
+                                    <SpeakerNotesIcon
                                         className='icons-comment'
                                         onClick={postCommentOpen}
                                     />
@@ -382,10 +428,12 @@ const PostList = () => {
                                 {/* コメント一覧 */}
                                 {commentOpen &&
                                     <div>
-                                        <p>comment</p>
+                                        <div className={classes.commentTitle}> 
+                                            <Typography >comment<CreateOutlinedIcon style={{fontSize: 15}} /></Typography>
+                                        </div>
+                                        {/* コメント */}
                                         {commentFilter && 
                                             (commentFilter.map((com) => (
-                                                
                                                 <div key={com.id}>
                                                     <Card style={{ position: 'relative', display: 'flex', marginBottom: 30 }} >
                                                         {/* アバター画像の有無 */}
@@ -399,47 +447,70 @@ const PostList = () => {
                                                                 {/* ユーザーネーム */}
                                                                 <Typography style={{fontSize: 13, fontWeight: 'bolder'}}>{commentProfileName(com.userComment)}</Typography>
                                                                 {/* 作成日時 */}
-                                                                <Typography style={{marginLeft: 15, opacity: 0.5, fontSize: 13}}>{com.created_at}</Typography>
+                                                                <Typography style={{ marginLeft: 15, marginRight: 15, opacity: 0.5, fontSize: 13 }}>{com.created_at}</Typography>
+                                                                {/* 削除ボタン */}
+                                                                <BsTrash
+                                                                    className={classes.deleteBtn}
+                                                                    onClick={() => { deleteComment(com.id) }} />
                                                             </div>
                                                             <div style={{marginTop: 5}}>
                                                                 {/* コメント */}
                                                                 <Typography>{com.comment}</Typography>
-
                                                             </div>
                                                         </CardContent>
                                                     </Card>
                                                 </div>
                                             )))
                                         }
-                                        <button onClick={postCommentClose}>close</button>
-                                        <TextField
-                                            id='commentText'
-                                            label='comment'
-                                            name='comment'
-                                            multiline
-                                            minRows={2}
-                                            style={{
-                                                width: 300,
-                                                marginTop: 20
-                                            }}
-                                            
-                                            onChange={handleCreateComment()}
-                                        />
-                                        <Button
-                                            variant="contained"
-                                            onClick={() => {
-                                                createComment(post.id);
-                                                resetValue();
-                                            }}
-                                        >
-                                            comment
-                                        </Button>
+                                        <div className={classes.commentField}>
+                                            <TextField
+                                                id='commentText'
+                                                label='comment'
+                                                name='comment'
+                                                multiline
+                                                minRows={2}
+                                                style={{
+                                                    width: 400,
+                                                }}
+                                                onChange={handleCreateComment()}
+                                            />
+                                        </div>
+                                        {commentValue ? 
+                                            <div className={classes.commentBtn}>
+                                                <Button
+                                                    variant="contained"
+                                                    onClick={() => {
+                                                        createComment(post.id);
+                                                        resetValue();
+                                                    }}
+                                                >
+                                                    comment
+                                                </Button>
+                                            </div>
+                                        :
+                                            <div className={classes.commentBtn}>
+                                                <Button
+                                                    variant="contained"
+                                                    disabled
+                                                    onClick={() => {
+                                                        createComment(post.id);
+                                                        resetValue();
+                                                    }}
+                                                >
+                                                    comment
+                                                </Button>
+                                            </div>
+                                        }
                                     </div>
                                 }
                                 
                                 
                             </>
                         }
+                        <div className={classes.dialogClose}>
+                            <HighlightOffOutlinedIcon
+                                onClick={postDetailCloseDialog} />
+                        </div>
                     </div>
                 </Dialog>
             </div>
