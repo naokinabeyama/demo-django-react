@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import ImageListItem from "@material-ui/core/ImageListItem";
 import ImageListItemBar from "@material-ui/core/ImageListItemBar";
@@ -42,6 +42,7 @@ const MyPost = () => {
     const { profile, postFull, post, setPost, editedPost, setEditedPost, editPost, deletePost } = useContext(ApiContext);
     const [state, setState] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
+
 
 
     // 初期
@@ -154,6 +155,8 @@ const MyPost = () => {
                             <IconButton onClick={handleEditPicture}>
                                 <MdAddAPhoto className='photo' />
                             </IconButton>
+                            {/* 削除ボタン */}
+                            <IconButton className='trash' onClick={() => { deletePost(); postCloseDialog(); }}><BsTrash /></IconButton>
                         </div>
                         {/* タイトル */}
                         <div style={{ textAlign: 'center' }}>
@@ -196,8 +199,6 @@ const MyPost = () => {
                                 edit
                             </Button>
                         </div>
-                        {/* 削除ボタン */}
-                        <button className='trash' onClick={() => { deletePost(); postCloseDialog(); }}><BsTrash /></button>
                     </div>
                 </Dialog>
             </div>

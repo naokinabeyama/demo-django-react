@@ -1,5 +1,5 @@
 import { Button, Card, CardContent, CardMedia, Dialog, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, TextField, Typography } from '@material-ui/core';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import { makeStyles } from '@material-ui/core/styles';
 import { MdAddAPhoto } from 'react-icons/md';
@@ -8,6 +8,7 @@ import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 import HighlightOffOutlinedIcon from '@material-ui/icons/HighlightOffOutlined';
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -114,7 +115,8 @@ const useStyles = makeStyles((theme) => ({
 
 const PostList = () => {
     const classes = useStyles();
-    const { profile, profiles, post, setPost, postFull, createPost, setEditedPost, editedPost, deletePost, createComment, comment, setComment, commentFull, deleteComment} = useContext(ApiContext);
+    // const location = useLocation();
+    const { profile, profiles, post, setPost, postFull, createPost, editPost,setEditedPost, editedPost, deletePost, createComment, comment, setComment, commentFull, deleteComment} = useContext(ApiContext);
     // 新規投稿ダイアログ
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     // 投稿詳細ダイアログ
@@ -123,12 +125,24 @@ const PostList = () => {
     const [userImg, setUserImg] = useState('');
     const [commentOpen, setCommentOpen] = useState(false);
     const [commentValue, setCommentValue] = useState(false);
+    const [state, setState] = useState(false);
     // 投稿コメント
     const commentFilter = commentFull.filter((comment) => {
         return post.id === comment.postComment
     });
 
 
+    // 初期
+    // useEffect(() => {
+    //     // 自分の投稿判定
+    //     const postJudg = () => {
+    //         location.state ?
+    //             setState(true)
+    //             :
+    //             setState(false)
+    //     };
+    //     postJudg();
+    // }, [location.state, editPost]);
 
     // 投稿フォーム表示
     const postCreateOpenDialog = () => {
@@ -157,8 +171,9 @@ const PostList = () => {
 
     // 画像投稿
     const handleImageInput = () => event => {
-        const value = event.target.files[0]
+        const value = event.target.files[0];
         const name = event.target.name;
+        console.log(value)
         setEditedPost({ ...editedPost, [name]: value });
     };
 
@@ -253,10 +268,13 @@ const PostList = () => {
                             <input type='file'
                                 id='imageInput'
                                 name='postImage'
+                                hidden='hidden'
                                 onChange={handleImageInput()} />
-                            <IconButton onClick={handleEditPicture}>
-                                <MdAddAPhoto className='photo' />
-                            </IconButton>
+                            <div style={{ textAlign: 'center' }}>
+                                <IconButton onClick={handleEditPicture}>
+                                    <MdAddAPhoto className='photo' />
+                                </IconButton>
+                            </div>
                         </div>
                         {/* タイトル */}
                         <div style={{ textAlign: 'center' }}>
@@ -350,9 +368,12 @@ const PostList = () => {
                                         onChange={handleImageInput()} />
                                 </div>
                                 <div style={{ textAlign: 'center' }}>
+                                    {/* 画像選択 */}
                                     <IconButton onClick={handleEditPicture}>
                                         <MdAddAPhoto className='photo' />
                                     </IconButton>
+                                    {/* 削除ボタン */}
+                                    <IconButton className='trash' onClick={() => { deletePost(); postDetailCloseDialog(); }}><BsTrash /></IconButton>
                                 </div>
                                 {/* タイトル */}
                                 <div style={{ textAlign: 'center' }}>
@@ -387,15 +408,14 @@ const PostList = () => {
                                     <Button
                                     variant="contained"
                                     onClick={() => {
-                                        // editPost(post.id);
+                                        editPost(post.id);
                                         postDetailCloseDialog();
                                     }}
                                     >
                                         edit
                                     </Button>
                                 </div>
-                                {/* 削除ボタン */}
-                                <button className='trash' onClick={() => { deletePost(); postDetailCloseDialog(); }}><BsTrash /></button>
+                                
                             </>
                         :
                             <>

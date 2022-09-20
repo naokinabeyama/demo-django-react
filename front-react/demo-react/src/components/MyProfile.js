@@ -107,7 +107,6 @@ const MyProfile = () => {
                 setState(true)
                 :
                 setState(false)
-                
         };
         profileJudg();
     }, [location.state]);
@@ -360,10 +359,18 @@ const MyProfile = () => {
                                 :
                                 <img src='http://127.0.0.1:8000/media/sampleImage/null.png' alt='profile' className={classes.createImage} />
                             }
-                            <input type='file' id='imageInput'  onChange={(event) => { setProfileImg(event.target.files[0]); event.target.value = '' }} />
+                            <input
+                                type='file'
+                                id='imageInput'
+                                hidden='hidden'
+                                onChange={(event) => { setProfileImg(event.target.files[0]); event.target.value = '' }} />
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
                             <IconButton onClick={handleEditPicture}>
                                 <MdAddAPhoto className='photo' />
                             </IconButton>
+                            {/* 削除ボタン */}
+                            <IconButton className='trash' onClick={() => { deleteProfile(); profileCloseDialog(); }}><BsTrash /></IconButton>
                         </div>
                         {/* ユーザーネーム */}
                         <div style={{ textAlign: 'center' }}>
@@ -470,8 +477,7 @@ const MyProfile = () => {
                                 </Button>
                             }
                         </div>
-                        {/* 削除ボタン */}
-                        <button className='trash' onClick={() => { deleteProfile(); profileCloseDialog(); }}><BsTrash /></button>
+                        
                     </div>
                 </Dialog>
             </div>

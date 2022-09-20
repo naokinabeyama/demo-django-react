@@ -167,7 +167,7 @@ const ApiContextProvider = (props) => {
             };
         };
         getPostCommentAll();
-    }, [token, post.id, commentFull]);
+    }, [token, post.id, comment]);
 
 
     // 新規プロフィール作成
@@ -259,6 +259,7 @@ const ApiContextProvider = (props) => {
         editData.append('introduction', editedProfile.introduction);
         // プロフィール画像
         profileImg.name && editData.append('img', profileImg, profileImg.name);
+        console.log(profileImg);
         try {
             const res = await axios.put(`http://localhost:8000/api/user/profile/${profile.id}/`, editData, {
                 headers: {
@@ -278,7 +279,7 @@ const ApiContextProvider = (props) => {
     const createPost = async () => {
         const createData = new FormData();
         // 格納されている投稿画像
-        createData.append('postImage', editedPost.postImage);
+        createData.append('postImage', editedPost.postImage, editedPost.postImage.name);
         // タイトル
         createData.append('title', editedPost.title);
         // 説明
@@ -337,11 +338,13 @@ const ApiContextProvider = (props) => {
     const editPost = async (id) => {
         const editData = new FormData();
         // 格納されている投稿画像
-        editData.append('postImage', editedPost.postImage);
+        editedPost.postImage.name && editData.append('postImage', editedPost.postImage, editedPost.postImage.name);
+        // console.log(editedPost.postImage)
         // タイトル
         editData.append('title', editedPost.title);
         // 説明
         editData.append('text', editedPost.text);
+
         try {
             const res = await axios.put(`http://localhost:8000/api/post/article/${id}/`, editData, {
                 headers: {
