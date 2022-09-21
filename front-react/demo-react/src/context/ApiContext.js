@@ -339,7 +339,6 @@ const ApiContextProvider = (props) => {
         const editData = new FormData();
         // 格納されている投稿画像
         editedPost.postImage.name && editData.append('postImage', editedPost.postImage, editedPost.postImage.name);
-        // console.log(editedPost.postImage)
         // タイトル
         editData.append('title', editedPost.title);
         // 説明
@@ -397,10 +396,51 @@ const ApiContextProvider = (props) => {
     };
 
 
-    // お気に入り
-    // const createFavorid = async () => {
-    //     const 
-    // }
+    // お気に入り(初期)
+    const createFavorid = async (user_id, post_id) => {
+        const createData = new FormData();
+        console.log(favorid.favorid)
+        console.log(favorid.id)
+        createData.append('postFavorid', post_id);
+        createData.append('userFavorid', user_id);
+        createData.append('favorid', favorid.favorid);
+        try {
+            const res = await axios.post(`http://localhost:8000/api/post/favorid/`, createData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}`
+                }
+            });
+            // 投稿
+            setFavorid(res.data);
+        } catch {
+            console.log('error');
+        };
+    }
+
+    // お気に入り(変更)
+    const editFavorid = async (user_id, post_id, favorid_id) => {
+        const editData = new FormData();
+        console.log(favorid.favorid)
+        console.log(favorid.id)
+        editData.append('postFavorid', post_id);
+        editData.append('userFavorid', user_id);
+        editData.append('favorid', favorid.favorid);
+        
+        try {
+            const res = await axios.put(`http://localhost:8000/api/post/favorid/${favorid_id}`, editData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}`
+                }
+            });
+            // 投稿
+            setFavorid(res.data);
+        } catch {
+            console.log('error');
+        };
+    }
+
 
     return (
         <ApiContext.Provider value={{
@@ -418,6 +458,8 @@ const ApiContextProvider = (props) => {
             comment,
             setComment,
             commentFull,
+            favorid,
+            setFavorid,
             createProfile,
             editProfile,
             deleteProfile,
@@ -426,6 +468,8 @@ const ApiContextProvider = (props) => {
             deletePost,
             createComment,
             deleteComment,
+            createFavorid,
+            editFavorid,
         }}>
             {props.children}
         </ApiContext.Provider>

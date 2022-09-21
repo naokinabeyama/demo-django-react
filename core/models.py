@@ -155,7 +155,7 @@ class Favorid(models.Model):
         db_table = 'favorid'
     
     def __str__(self):
-        return Post.title + ':' + str(self.favorid)
+        return str(Post.title) + ':' + str(self.favorid)
 
 
 # 友達申請

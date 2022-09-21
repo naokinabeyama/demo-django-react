@@ -345,7 +345,6 @@ const MyProfile = () => {
                 </>
             }
 
-
             {/* ダイアログ(プロフィール作成、更新) */}
             <div>
                 <Dialog open={dialogOpen} onClose={profileCloseDialog}>

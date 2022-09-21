@@ -1,5 +1,5 @@
 import { Button, Card, CardContent, CardMedia, Dialog, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, TextField, Typography } from '@material-ui/core';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import { makeStyles } from '@material-ui/core/styles';
 import { MdAddAPhoto } from 'react-icons/md';
@@ -115,8 +115,7 @@ const useStyles = makeStyles((theme) => ({
 
 const PostList = () => {
     const classes = useStyles();
-    // const location = useLocation();
-    const { profile, profiles, post, setPost, postFull, createPost, editPost,setEditedPost, editedPost, deletePost, createComment, comment, setComment, commentFull, deleteComment} = useContext(ApiContext);
+    const { profile, profiles, post, setPost, postFull, createPost, editPost,setEditedPost, editedPost, deletePost, createComment, comment, setComment, commentFull, deleteComment, favorid, setFavorid, createFavorid, editFavorid } = useContext(ApiContext);
     // 新規投稿ダイアログ
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     // 投稿詳細ダイアログ
@@ -125,24 +124,21 @@ const PostList = () => {
     const [userImg, setUserImg] = useState('');
     const [commentOpen, setCommentOpen] = useState(false);
     const [commentValue, setCommentValue] = useState(false);
-    const [state, setState] = useState(false);
+    const [favoridBtn, setFavoridBtn] = useState(favorid.favorid);
+
     // 投稿コメント
     const commentFilter = commentFull.filter((comment) => {
         return post.id === comment.postComment
     });
 
 
-    // 初期
-    // useEffect(() => {
-    //     // 自分の投稿判定
-    //     const postJudg = () => {
-    //         location.state ?
-    //             setState(true)
-    //             :
-    //             setState(false)
-    //     };
-    //     postJudg();
-    // }, [location.state, editPost]);
+    // 初期処理
+    useEffect(() => {
+        if (typeof favoridBtn === "undefined") {
+            setFavoridBtn(false);
+        }
+    }, []);
+
 
     // 投稿フォーム表示
     const postCreateOpenDialog = () => {
@@ -173,7 +169,6 @@ const PostList = () => {
     const handleImageInput = () => event => {
         const value = event.target.files[0];
         const name = event.target.name;
-        console.log(value)
         setEditedPost({ ...editedPost, [name]: value });
     };
 
@@ -222,7 +217,7 @@ const PostList = () => {
         :
             setCommentValue(true)
         }
-        setComment({ ...comment, [name]: value }); 
+        setComment({ ...comment, [name]: value });
     }
 
     // コメントしたユーザープロフィール画像
@@ -241,15 +236,31 @@ const PostList = () => {
         return commentPro[0].username;
     };
      
-
     // コメント作成後textfieldを空に
     const resetValue = () => {
         const textForm = document.getElementById('commentText');
         textForm.value = '';
     };
-        
-    
 
+    // お気に入り
+    const changeFavorid = () => {
+        if (favorid && profile.userPro === favorid.userFavorid && post.id === favorid.postFavorid) {
+            if (favoridBtn === true) {
+                setFavoridBtn(false)
+                
+            } else {
+                setFavoridBtn(true)
+            }
+            setFavorid({ ...favorid, "favorid": setFavoridBtn });
+            console.log(favorid)
+            editFavorid(profile.userPro, post.id, favorid.id);
+        } else {
+            setFavoridBtn(true)
+            setFavorid({ ...favorid, "favorid": true });
+            console.log(favorid)
+            createFavorid(profile.userPro, post.id);
+        }
+    }
 
 
     return (
@@ -426,7 +437,23 @@ const PostList = () => {
                                 {/* icon */}
                                 <div className={classes.icons}>
                                     {/* お気に入り */}
-                                    <StarBorderIcon className='icons-star' />
+                                    {favorid.favorid && favorid.postFavorid === post.id && favorid.userFavorid === profile.userPro ?
+                                        <StarBorderIcon
+                                            style={{ color: '#FFD700', marginRight: 10 }}
+                                            onClick={
+                                                changeFavorid
+                                            }
+                                        />
+                                    :
+                                        <>
+                                            <StarBorderIcon
+                                                className='icons-star'
+                                                onClick={
+                                                    changeFavorid
+                                                }
+                                            />
+                                        </>
+                                    }
                                     {/* コメント */}
                                     <SpeakerNotesIcon
                                         className='icons-comment'
