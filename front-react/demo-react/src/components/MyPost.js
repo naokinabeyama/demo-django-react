@@ -42,6 +42,7 @@ const MyPost = () => {
     const { profile, postFull, post, setPost, editedPost, setEditedPost, editPost, deletePost } = useContext(ApiContext);
     const [state, setState] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [myPost, setMyPost] = useState(false);
 
 
 
@@ -61,12 +62,12 @@ const MyPost = () => {
     // 投稿判定
     const myPostFull = !state ?
         postFull.filter((post) => {
-            return post.userPost === profile.userPro
-        })
+                return post.userPost === profile.userPro
+            })
         :
         postFull.filter((post) => {
-            return post.userPost === location.state.pro.userPro
-        })
+                return post.userPost === location.state.pro.userPro
+            })
 
     
     // 投稿フォーム表示
@@ -151,54 +152,61 @@ const MyPost = () => {
                                 hidden='hidden'
                                 onChange={handleImageInput()} />
                         </div>
-                        <div style={{ textAlign: 'center' }}>
-                            <IconButton onClick={handleEditPicture}>
-                                <MdAddAPhoto className='photo' />
-                            </IconButton>
-                            {/* 削除ボタン */}
-                            <IconButton className='trash' onClick={() => { deletePost(); postCloseDialog(); }}><BsTrash /></IconButton>
-                        </div>
-                        {/* タイトル */}
-                        <div style={{ textAlign: 'center' }}>
-                            <TextField
-                                autoFocus
-                                label='title'
-                                name='title'
-                                style={{
-                                    width: 300,
-                                    marginTop: 20
-                                }}
-                                defaultValue={post.title}
-                                onChange={handleInputChange()}
-                                />
-                        </div>
-                        {/* 説明文 */}
-                        <div style={{ textAlign: 'center' }}>
-                            <TextField
-                                label='text'
-                                name='text'
-                                multiline
-                                minRows={2}
-                                style={{
-                                    width: 300,
-                                    marginTop: 20
-                                }}
-                                defaultValue={post.text}
-                                onChange={handleInputChange()}
-                                />
-                        </div>
-                        {/* 更新ボタン */}
-                        <div style={{ textAlign: 'center', marginTop: 30, marginBottom: 30 }}>
-                            <Button
-                            variant="contained"
-                            onClick={() => {
-                                editPost(post.id);
-                                postCloseDialog();
-                            }}
-                            >
-                                edit
-                            </Button>
-                        </div>
+                        {post.userPost === profile.userPro ?
+                            <>
+                                <div style={{ textAlign: 'center' }}>
+                                    {/* 画像 */}
+                                    <IconButton onClick={handleEditPicture}>
+                                        <MdAddAPhoto className='photo' />
+                                    </IconButton>
+                                    {/* 削除ボタン */}
+                                    <IconButton className='trash' onClick={() => { deletePost(); postCloseDialog(); }}><BsTrash /></IconButton>
+                                </div>
+                                {/* タイトル */}
+                                <div style={{ textAlign: 'center' }}>
+                                    <TextField
+                                        autoFocus
+                                        label='title'
+                                        name='title'
+                                        style={{
+                                            width: 300,
+                                            marginTop: 20
+                                        }}
+                                        defaultValue={post.title}
+                                        onChange={handleInputChange()}
+                                        />
+                                </div>
+                                {/* 説明文 */}
+                                <div style={{ textAlign: 'center' }}>
+                                    <TextField
+                                        label='text'
+                                        name='text'
+                                        multiline
+                                        minRows={2}
+                                        style={{
+                                            width: 300,
+                                            marginTop: 20
+                                        }}
+                                        defaultValue={post.text}
+                                        onChange={handleInputChange()}
+                                        />
+                                </div>
+                                {/* 更新ボタン */}
+                                <div style={{ textAlign: 'center', marginTop: 30, marginBottom: 30 }}>
+                                    <Button
+                                    variant="contained"
+                                    onClick={() => {
+                                        editPost(post.id);
+                                        postCloseDialog();
+                                    }}
+                                    >
+                                        edit
+                                    </Button>
+                                </div>
+                            </>
+                        :
+                            <p>コンんちは</p>
+                        }
                     </div>
                 </Dialog>
             </div>

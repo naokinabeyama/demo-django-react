@@ -40,11 +40,13 @@ const ApiContextProvider = (props) => {
     const [comment, setComment] = useState([]);
     // 全コメント
     const [commentFull, setCommentFull] = useState([]);
-     // お気に入り
+    // お気に入り
     const [favorid, setFavorid] = useState([]);
+    // 全てのお気に入り
+    const [favoridAll, setFavoridAll] = useState([]);
 
 
-    // 初期画面(プロフィール)
+    // 初期画面(プロフィール、投稿)
     useEffect(() => {
         // 全ユーザーのプロフィール
         const getProfileList = async () => {
@@ -151,6 +153,7 @@ const ApiContextProvider = (props) => {
     }, [token, profile.id, post.id]);
 
 
+    // 初期画面(コメント)
     useEffect(() => {
         // 全ユーザーのコメント
         const getPostCommentAll = async () => {
@@ -168,6 +171,27 @@ const ApiContextProvider = (props) => {
         };
         getPostCommentAll();
     }, [token, post.id, comment]);
+
+
+    // 初期画面(お気に入り)
+    useEffect(() => {
+        // 全ユーザーのコメント
+        const getPostFavorid = async () => {
+            try {
+                const res = await axios.get('http://localhost:8000/api/post/favorid/', {
+                    headers: {
+                        'Authorization': `Token ${token}`
+                    }
+                });
+                // 全ユーザーのコメント
+                setFavoridAll(res.data);
+            } catch {
+                console.log('error')
+            };
+        };
+        getPostFavorid();
+    }, [token, favorid, post.id]);
+
 
 
     // 新規プロフィール作成
@@ -397,13 +421,11 @@ const ApiContextProvider = (props) => {
 
 
     // お気に入り(初期)
-    const createFavorid = async (user_id, post_id) => {
+    const createFavorid = async (user_id, post_id, favoridBool) => {
         const createData = new FormData();
-        console.log(favorid.favorid)
-        console.log(favorid.id)
         createData.append('postFavorid', post_id);
         createData.append('userFavorid', user_id);
-        createData.append('favorid', favorid.favorid);
+        createData.append('favorid', favoridBool);
         try {
             const res = await axios.post(`http://localhost:8000/api/post/favorid/`, createData, {
                 headers: {
@@ -419,16 +441,14 @@ const ApiContextProvider = (props) => {
     }
 
     // お気に入り(変更)
-    const editFavorid = async (user_id, post_id, favorid_id) => {
+    const editFavorid = async (user_id, post_id, favorid_id, favoridBool) => {
         const editData = new FormData();
-        console.log(favorid.favorid)
-        console.log(favorid.id)
         editData.append('postFavorid', post_id);
         editData.append('userFavorid', user_id);
-        editData.append('favorid', favorid.favorid);
+        editData.append('favorid', favoridBool);
         
         try {
-            const res = await axios.put(`http://localhost:8000/api/post/favorid/${favorid_id}`, editData, {
+            const res = await axios.put(`http://localhost:8000/api/post/favorid/${favorid_id}/`, editData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Token ${token}`
@@ -459,7 +479,7 @@ const ApiContextProvider = (props) => {
             setComment,
             commentFull,
             favorid,
-            setFavorid,
+            favoridAll,
             createProfile,
             editProfile,
             deleteProfile,

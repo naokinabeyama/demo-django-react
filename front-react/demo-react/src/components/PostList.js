@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import { makeStyles } from '@material-ui/core/styles';
 import { MdAddAPhoto } from 'react-icons/md';
-import { BsTrash } from 'react-icons/bs';
+import { BsFillCameraVideoFill, BsTrash } from 'react-icons/bs';
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
@@ -55,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         color: 'grey',
         '& .icons-star': {
-            marginRight: 10,
             '&:hover': {
                 color: '#FFD700', 
             },
@@ -102,7 +101,8 @@ const useStyles = makeStyles((theme) => ({
         marginTop: 15,
     },
     dialogClose: {
-        textAlign: 'right',
+        display: 'flex',
+        justifyContent: 'flex-end',
         cursor: 'pointer',
         color: 'grey',
         '&:hover': {
@@ -115,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
 
 const PostList = () => {
     const classes = useStyles();
-    const { profile, profiles, post, setPost, postFull, createPost, editPost,setEditedPost, editedPost, deletePost, createComment, comment, setComment, commentFull, deleteComment, favorid, setFavorid, createFavorid, editFavorid } = useContext(ApiContext);
+    const { profile, profiles, post, setPost, postFull, createPost, editPost,setEditedPost, editedPost, deletePost, createComment, comment, setComment, commentFull, deleteComment, favorid, favoridAll, createFavorid, editFavorid } = useContext(ApiContext);
     // 新規投稿ダイアログ
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     // 投稿詳細ダイアログ
@@ -124,7 +124,7 @@ const PostList = () => {
     const [userImg, setUserImg] = useState('');
     const [commentOpen, setCommentOpen] = useState(false);
     const [commentValue, setCommentValue] = useState(false);
-    const [favoridBtn, setFavoridBtn] = useState(favorid.favorid);
+    const [favoridBtn, setFavoridBtn] = useState(false);
 
     // 投稿コメント
     const commentFilter = commentFull.filter((comment) => {
@@ -133,11 +133,9 @@ const PostList = () => {
 
 
     // 初期処理
-    useEffect(() => {
-        if (typeof favoridBtn === "undefined") {
-            setFavoridBtn(false);
-        }
-    }, []);
+    // useEffect(() => {
+        
+    // }, [favorid.id]);
 
 
     // 投稿フォーム表示
@@ -242,23 +240,35 @@ const PostList = () => {
         textForm.value = '';
     };
 
-    // お気に入り
-    const changeFavorid = () => {
-        if (favorid && profile.userPro === favorid.userFavorid && post.id === favorid.postFavorid) {
-            if (favoridBtn === true) {
-                setFavoridBtn(false)
-                
-            } else {
-                setFavoridBtn(true)
-            }
-            setFavorid({ ...favorid, "favorid": setFavoridBtn });
-            console.log(favorid)
-            editFavorid(profile.userPro, post.id, favorid.id);
+    // お気に入り(登録・変更)
+    const changeFavorid = (post_id, user_id) => {
+        const fvr = favoridAll.filter((item) => {
+            return user_id === item.userFavorid && post_id === item.postFavorid
+        })
+        if (fvr.length === 0) {
+            setFavoridBtn(true);
+            createFavorid(user_id, post_id, true);
         } else {
-            setFavoridBtn(true)
-            setFavorid({ ...favorid, "favorid": true });
-            console.log(favorid)
-            createFavorid(profile.userPro, post.id);
+            if (fvr[0].favorid) {
+                setFavoridBtn(false);
+                editFavorid(fvr[0].userFavorid, fvr[0].postFavorid, fvr[0].id, false);
+            } else {
+                setFavoridBtn(true);
+                editFavorid(fvr[0].userFavorid, fvr[0].postFavorid, fvr[0].id, true);
+            }
+        }
+        
+    };
+
+    // お気に入り表示
+    const viewFavorid = (post_id, user_id) => {
+        const fvr = favoridAll.filter((item) => {
+            return user_id === item.userFavorid && post_id === item.postFavorid
+        })
+        if (fvr.length === 0) {
+            setFavoridBtn(false);
+        } else {
+            setFavoridBtn(fvr[0].favorid);
         }
     }
 
@@ -343,6 +353,7 @@ const PostList = () => {
                         <ImageListItem className={classes.postItem} key={postList.id} style={{height: 200}} onClick={() => {
                             handlePostDetail(postList);
                             postDetailOpenDialog();
+                            viewFavorid(postList.id, profile.userPro);
                         }}>
                             <img
                                 src={postList.postImage}
@@ -378,13 +389,15 @@ const PostList = () => {
                                         hidden='hidden'
                                         onChange={handleImageInput()} />
                                 </div>
-                                <div style={{ textAlign: 'center' }}>
+                                 <div className={classes.icons}>
                                     {/* 画像選択 */}
                                     <IconButton onClick={handleEditPicture}>
-                                        <MdAddAPhoto className='photo' />
+                                        <MdAddAPhoto className='icons-comment' />
                                     </IconButton>
                                     {/* 削除ボタン */}
-                                    <IconButton className='trash' onClick={() => { deletePost(); postDetailCloseDialog(); }}><BsTrash /></IconButton>
+                                    <IconButton className='icons-comment' onClick={() => { deletePost(); postDetailCloseDialog(); }}><BsTrash /></IconButton>
+                                    {/* コメント */}
+                                    <IconButton className='icons-comment' onClick={postCommentOpen}><SpeakerNotesIcon/></IconButton>
                                 </div>
                                 {/* タイトル */}
                                 <div style={{ textAlign: 'center' }}>
@@ -426,7 +439,45 @@ const PostList = () => {
                                         edit
                                     </Button>
                                 </div>
-                                
+                                {/* コメント一覧 */}
+                                {commentOpen &&
+                                    <div>
+                                        <div className={classes.commentTitle}> 
+                                            <Typography >comment<CreateOutlinedIcon style={{fontSize: 15}} /></Typography>
+                                        </div>
+                                        {/* コメント */}
+                                        {commentFilter && 
+                                            (commentFilter.map((com) => (
+                                                <div key={com.id}>
+                                                    <Card style={{ position: 'relative', display: 'flex', marginBottom: 30 }} >
+                                                        {/* アバター画像の有無 */}
+                                                        {commentProfileImg(com.userComment) ? (
+                                                            <CardMedia style={{ minWidth: 70, height: 70 }} image={commentProfileImg(com.userComment)} />
+                                                        ):(
+                                                            <CardMedia style={{ minWidth: 70, height: 70 }} image='http://127.0.0.1:8000/media/image/null.png' />
+                                                        )}
+                                                        <CardContent style={{ padding: 5 }}>
+                                                            <div style={{display: 'flex'}}>
+                                                                {/* ユーザーネーム */}
+                                                                <Typography style={{fontSize: 13, fontWeight: 'bolder'}}>{commentProfileName(com.userComment)}</Typography>
+                                                                {/* 作成日時 */}
+                                                                <Typography style={{ marginLeft: 15, marginRight: 15, opacity: 0.5, fontSize: 13 }}>{com.created_at}</Typography>
+                                                                {/* 削除ボタン */}
+                                                                <BsTrash
+                                                                    className={classes.deleteBtn}
+                                                                    onClick={() => { deleteComment(com.id) }} />
+                                                            </div>
+                                                            <div style={{marginTop: 5}}>
+                                                                {/* コメント */}
+                                                                <Typography>{com.comment}</Typography>
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                </div>
+                                            )))
+                                        }
+                                    </div>
+                                }
                             </>
                         :
                             <>
@@ -437,28 +488,27 @@ const PostList = () => {
                                 {/* icon */}
                                 <div className={classes.icons}>
                                     {/* お気に入り */}
-                                    {favorid.favorid && favorid.postFavorid === post.id && favorid.userFavorid === profile.userPro ?
-                                        <StarBorderIcon
-                                            style={{ color: '#FFD700', marginRight: 10 }}
-                                            onClick={
-                                                changeFavorid
-                                            }
-                                        />
-                                    :
-                                        <>
-                                            <StarBorderIcon
-                                                className='icons-star'
-                                                onClick={
-                                                    changeFavorid
-                                                }
-                                            />
-                                        </>
+                                    {favoridBtn ?
+                                        <IconButton
+                                            style={{ color: '#FFD700' }}
+                                            onClick={() => {
+                                                changeFavorid(post.id, profile.userPro)
+                                            }}>
+                                            <StarBorderIcon/>
+                                        </IconButton>
+                                        :
+                                        <IconButton
+                                            className='icons-star'
+                                            onClick={() => {
+                                                changeFavorid(post.id, profile.userPro)
+                                            }}>
+                                            <StarBorderIcon/>
+                                        </IconButton>
                                     }
                                     {/* コメント */}
-                                    <SpeakerNotesIcon
+                                    <IconButton
                                         className='icons-comment'
-                                        onClick={postCommentOpen}
-                                    />
+                                        onClick={postCommentOpen}><SpeakerNotesIcon/></IconButton>
                                 </div>
                                 {/* タイトル */}
                                 <div className={classes.postTitle}>
@@ -496,9 +546,13 @@ const PostList = () => {
                                                                 {/* 作成日時 */}
                                                                 <Typography style={{ marginLeft: 15, marginRight: 15, opacity: 0.5, fontSize: 13 }}>{com.created_at}</Typography>
                                                                 {/* 削除ボタン */}
+                                                                {com.userComment === profile.userPro ?
                                                                 <BsTrash
                                                                     className={classes.deleteBtn}
                                                                     onClick={() => { deleteComment(com.id) }} />
+                                                                :
+                                                                    <></>
+                                                                }
                                                             </div>
                                                             <div style={{marginTop: 5}}>
                                                                 {/* コメント */}
