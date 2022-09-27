@@ -6,25 +6,22 @@ import  IconButton  from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import Avatar from '@material-ui/core/Avatar';
-import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip'
 import Drawer from '@material-ui/core/Drawer';
 import Box from '@material-ui/core/Box';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import Badge from '@material-ui/core/Badge';
 import { FiLogOut } from 'react-icons/fi';
 import { withCookies } from 'react-cookie';
 import { useContext, useState } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import List from '@material-ui/core/List';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, Route, useHistory } from 'react-router-dom';
+import NewPost from './NewPost';
 
 
 
 
 const useStyles = makeStyles((theme) => ({
-
     bg: {
         marginRight: theme.spacing(1),
     },
@@ -33,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 30,
         fontSize: 30,
         fontFamily: 'Courier New',
+    },
+    logOutBtn: {
+        '&:hover': {
+            opacity: 0.7,
+        },
     },
 }));
 
@@ -107,6 +109,9 @@ const Navbar = (props) => {
                     DEMO SNS
                 </Typography>
 
+                {/* 新規投稿 */}
+                <NewPost />
+
                 {/* 画像アイコン */}
                 <div>
                     <IconButton
@@ -138,11 +143,13 @@ const Navbar = (props) => {
                 </div>
 
                 {/* ログアウトアイコン */}
-                <Tooltip title='Logout'>
-                    <button className='signOut' onClick={Logout()}>
-                        <FiLogOut />
-                    </button>
-                </Tooltip>
+                <IconButton className={classes.logOutBtn}>
+                    <Tooltip title='Logout'>
+                        <button className='signOut' onClick={Logout()}>
+                            <FiLogOut />
+                        </button>
+                    </Tooltip>
+                </IconButton>
             </Toolbar>
         </AppBar>
     );

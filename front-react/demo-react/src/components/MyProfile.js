@@ -75,10 +75,9 @@ const useStyles = makeStyles((theme) => ({
     },
     buildIcon: {
         opacity: 0.4,
-        fontSize: 15,
         cursor: 'pointer',
         '&:hover': {
-            opacity: 0.3,
+            opacity: 0.8,
         },
     },
     myIntroduction: {
@@ -94,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
 const MyProfile = () => {
     const location = useLocation();
     const classes = useStyles();
-    const { profile, editedProfile, setEditedProfile, deleteProfile, profileImg, setProfileImg, createProfile, editProfile } = useContext(ApiContext);
+    const { profile, editedProfile, setEditedProfile, deleteProfile, setProfileImg, createProfile, editProfile } = useContext(ApiContext);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [state, setState] = useState(false);
 
@@ -326,7 +325,9 @@ const MyProfile = () => {
                                     </Grid>
                                     {/* プロフィール設定ボタン */}
                                     <div>
-                                        <BuildSharp className={classes.buildIcon} onClick={profileOpenDialog} />
+                                        <IconButton className={classes.buildIcon}>
+                                            <BuildSharp style={{fontSize: 15}} onClick={profileOpenDialog} />
+                                        </IconButton>
                                     </div>
                                 </div>
                             </div>

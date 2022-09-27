@@ -1,9 +1,9 @@
-import { Button, Card, CardContent, CardMedia, Dialog, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, TextField, Typography } from '@material-ui/core';
-import { useContext, useEffect, useState } from 'react';
+import { Button, Card, CardContent, CardMedia, Dialog, IconButton, ImageList, ImageListItem, ImageListItemBar, TextField, Typography } from '@material-ui/core';
+import { useContext, useState } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import { makeStyles } from '@material-ui/core/styles';
 import { MdAddAPhoto } from 'react-icons/md';
-import { BsFillCameraVideoFill, BsTrash } from 'react-icons/bs';
+import { BsTrash } from 'react-icons/bs';
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
@@ -115,9 +115,7 @@ const useStyles = makeStyles((theme) => ({
 
 const PostList = () => {
     const classes = useStyles();
-    const { profile, profiles, post, setPost, postFull, createPost, editPost,setEditedPost, editedPost, deletePost, createComment, comment, setComment, commentFull, deleteComment, favorid, favoridAll, createFavorid, editFavorid } = useContext(ApiContext);
-    // 新規投稿ダイアログ
-    const [createDialogOpen, setCreateDialogOpen] = useState(false);
+    const { profile, profiles, post, setPost, postFull, editPost, setEditedPost, editedPost, deletePost, createComment, comment, setComment, commentFull, deleteComment, favoridAll, createFavorid, editFavorid } = useContext(ApiContext);
     // 投稿詳細ダイアログ
     const [detailDialogOpen, setDetailDialogOpen] = useState(false);
     const [name, setName] = useState('');
@@ -125,28 +123,15 @@ const PostList = () => {
     const [commentOpen, setCommentOpen] = useState(false);
     const [commentValue, setCommentValue] = useState(false);
     const [favoridBtn, setFavoridBtn] = useState(false);
+    // 降順
+    const reversePostFull = [...postFull].reverse();
+
 
     // 投稿コメント
     const commentFilter = commentFull.filter((comment) => {
         return post.id === comment.postComment
     });
 
-
-    // 初期処理
-    // useEffect(() => {
-        
-    // }, [favorid.id]);
-
-
-    // 投稿フォーム表示
-    const postCreateOpenDialog = () => {
-        setCreateDialogOpen(true);
-    };
-
-    // 投稿フォーム非表示
-    const postCreateCloseDialog = () => {
-        setCreateDialogOpen(false);
-    };
 
 
     // 画像ファイルを表示
@@ -200,11 +185,6 @@ const PostList = () => {
             setCommentOpen(true)
         }
     }
-
-    // コメント非表示
-    // const postCommentClose = () => {
-    //     setCommentOpen(false);
-    // }
 
     // 新規コメント
     const handleCreateComment = () => event => {
@@ -275,70 +255,6 @@ const PostList = () => {
 
     return (
         <>
-            <button onClick={postCreateOpenDialog}>createpost</button>
-            {/* 新規投稿 */}
-            <div>
-                <Dialog open={createDialogOpen} onClose={postCreateCloseDialog}>
-                    <div className={classes.dialog}>
-                        {/* 設定タイトル */}
-                        <DialogTitle style={{ textAlign: 'center' }}>CreatePost
-                        </DialogTitle>
-                        {/* 投稿画像 */}
-                        <div style={{ textAlign: 'center' }}>
-                            <img src='http://127.0.0.1:8000/media/sampleImage/null.png' alt='profile' className={classes.postImage} />
-                            <input type='file'
-                                id='imageInput'
-                                name='postImage'
-                                hidden='hidden'
-                                onChange={handleImageInput()} />
-                            <div style={{ textAlign: 'center' }}>
-                                <IconButton onClick={handleEditPicture}>
-                                    <MdAddAPhoto className='photo' />
-                                </IconButton>
-                            </div>
-                        </div>
-                        {/* タイトル */}
-                        <div style={{ textAlign: 'center' }}>
-                            <TextField
-                                autoFocus
-                                label='title'
-                                name='title'
-                                style={{
-                                    width: 300,
-                                    marginTop: 20
-                                }}
-                                onChange={handleInputChange()}
-                            />
-                        </div>
-                        {/* 説明文 */}
-                        <div style={{ textAlign: 'center' }}>
-                            <TextField
-                                label='text'
-                                name='text'
-                                multiline
-                                minRows={2}
-                                style={{
-                                    width: 300,
-                                    marginTop: 20
-                                }}
-                                onChange={handleInputChange()}
-                            />
-                        </div>
-                        {/* 更新ボタン */}
-                        <div style={{ textAlign: 'center', marginTop: 30, marginBottom: 30 }}>
-                            <Button
-                                variant="contained"
-                                onClick={() => {
-                                    createPost();
-                                    postCreateCloseDialog();
-                                }}
-                            >
-                                create
-                            </Button>
-                        </div>
-                    </div>
-                </Dialog>
-            </div>
             
             <div className={classes.title}>
                 <Typography variant='h3'>
@@ -348,8 +264,8 @@ const PostList = () => {
             {/* 画像一覧 */}
             <ImageList style={{ width: 900, height: 600, margin: '0 auto' }} cols={4}>
                 {/* 画像の有無 */}
-                {postFull && (
-                    postFull.map((postList) => (
+                {reversePostFull && (
+                    reversePostFull.map((postList) => (
                         <ImageListItem className={classes.postItem} key={postList.id} style={{height: 200}} onClick={() => {
                             handlePostDetail(postList);
                             postDetailOpenDialog();
